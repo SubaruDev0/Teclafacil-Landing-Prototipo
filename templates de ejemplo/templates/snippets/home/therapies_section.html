@@ -1,0 +1,35 @@
+{% load static %}
+{% load i18n %}
+
+<!-- Terapias grid -->
+<section id="terapias" class="py-5" style="background-color: #f8f9fa !important;">
+    <div class="container py-md-2 py-lg-4">
+        <h2 class="h1 text-center">{% trans "Nuestras Terapias" %}</h2>
+        <p class="text-center pb-4 mb-2 mb-lg-3">{% trans "Especializados en terapias complementarias con evidencia científica" %}</p>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+            <!-- Categorías disponibles -->
+            {% for category in active_categories %}
+            <div class="col">
+                <a class="card h-100 text-decoration-none" href="{% url 'landing:shop_catalog' %}?category={{ category.pk }}">
+                <div class="card-body pb-0">
+                    {% if category.icon %}
+                    <i class="{{ category.icon }} display-4 text-warning mb-4"></i>
+                    {% else %}
+                    <svg class="d-block text-warning mb-4" width="40" height="40" viewBox="0 0 40 40" fill="currentColor">
+                        <path d="M20 2C10.058 2 2 10.058 2 20s8.058 18 18 18 18-8.058 18-18S29.942 2 20 2zm8 26H12v-2h16v2zm0-4H12v-2h16v2zm0-4H12v-2h16v2zm0-4H12v-2h16v2z"></path>
+                    </svg>
+                    {% endif %}
+                    <h3 class="h4 card-title mt-0">{{ category.name }}</h3>
+                    <p class="card-text">{% blocktrans with cat=category.name|lower %}Explora nuestros productos y cursos en {{ cat }}.{% endblocktrans %}</p>
+                </div>
+                <div class="card-footer border-0 py-3 my-3 mb-sm-4">
+                    <div class="btn btn-lg btn-icon btn-outline-primary rounded-circle pe-none">
+                        <i class="ai-arrow-right"></i>
+                    </div>
+                </div>
+            </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>

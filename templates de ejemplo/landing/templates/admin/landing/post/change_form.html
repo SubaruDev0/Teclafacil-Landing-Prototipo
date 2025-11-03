@@ -1,0 +1,74 @@
+{% extends "admin/change_form.html" %}
+{% load i18n %}
+
+{% block extrahead %}
+    {{ block.super }}
+    {# Podemos agregar estilos locales si es necesario, pero Quill CSS se carga desde Media del formulario #}
+{% endblock %}
+
+{% block content %}
+    {{ block.super }}
+
+    <script>
+    (function waitAndInitQuill(){
+
+        function initQuillForTextarea(textarea) {
+            var container = document.createElement('div');
+            container.className = 'quill-container';
+            textarea.parentNode.insertBefore(container, textarea);
+            container.style.minHeight = '200px';
+            textarea.style.display = 'none';
+
+            var quill = new Quill(container, {
+                theme: 'snow',
+                modules: {
+                    toolbar: [
+                        [{ header: [1, 2, 3, false] }],
+                        ['bold', 'italic', 'underline'],
+                        ['link', 'image'],
+                        [{ list: 'ordered' }, { list: 'bullet' }],
+                        ['clean']
+                    ]
+                }
+            });
+
+            if (textarea.value && textarea.value.trim().length > 0) {
+                quill.root.innerHTML = textarea.value;
+            }
+
+            var form = textarea.closest('form');
+            if (form) {
+                form.addEventListener('submit', function () {
+                    textarea.value = quill.root.innerHTML;
+                });
+            }
+        }
+
+        function runInit() {
+            var textareas = document.querySelectorAll('textarea.quill-input');
+            textareas.forEach(function (ta) {
+                initQuillForTextarea(ta);
+            });
+        }
+
+        var attempts = 0;
+        function wait() {
+            if (typeof Quill !== 'undefined') {
+                runInit();
+            } else if (attempts < 100) {
+                attempts++;
+                setTimeout(wait, 50);
+            } else {
+                console.warn('Quill no estuvo disponible para inicializar el editor en admin');
+            }
+        }
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', wait);
+        } else {
+            wait();
+        }
+    })();
+    </script>
+
+{% endblock %}
+

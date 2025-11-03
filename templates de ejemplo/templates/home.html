@@ -1,0 +1,79 @@
+{% extends 'base_landing.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block extra_css %}
+<style>
+    /* Card hover effects */
+    .card-hover {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+    .card-hover:hover .btn-icon.opacity-0 {
+        opacity: 1 !important;
+    }
+
+    /* Product image styling */
+    .product-img {
+        height: 226px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+    }
+    .product-img img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+
+    /* Price styling */
+    .price-old {
+        text-decoration: line-through;
+        opacity: 0.6;
+    }
+
+    /* Color selector styling */
+    .btn-check:checked + .btn-outline-secondary {
+        border-color: #448c74;
+        background-color: transparent;
+    }
+
+    /* Swiper navigation buttons */
+    .btn-prev, .btn-next {
+        transition: all 0.3s ease;
+    }
+    .btn-prev:hover, .btn-next:hover {
+        transform: scale(1.1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{# Hero Section #}
+{% include 'snippets/home/hero_home_section.html' %}
+
+{# Therapies Section #}
+{% include 'snippets/home/therapies_section.html' %}
+
+{# Stats Section #}
+{% include 'snippets/home/stats_section.html' %}
+
+{# Devices Carousel #}
+{% include 'snippets/home/devices_carousel_section.html' %}
+
+{# Courses Section #}
+{% include 'snippets/home/courses_section.html' %}
+
+{# About & Methodology Section #}
+{% include 'snippets/home/about_methodology_section.html' %}
+
+{# Testimonials Section #}
+{% include 'snippets/home/testimonials_section.html' %}
+
+{# CTA Section #}
+{% include 'snippets/home/cta_section.html' %}
+{% endblock %}

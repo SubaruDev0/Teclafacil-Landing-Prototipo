@@ -1,0 +1,94 @@
+{% load static %}
+{% load i18n %}
+
+<!-- Dispositivos (Carousel) -->
+{% if featured_devices %}
+<section id="dispositivos" class="container pb-5 mb-lg-3 mb-xl-4 mb-xxl-5">
+    <div class="d-flex align-items-center justify-content-between pb-4 mb-2 mb-md-3">
+        <h2 class="h1 pt-1 mb-0">{% trans "Dispositivos para Práctica" %}</h2>
+        <!-- Slider prev/next buttons -->
+        <div class="d-flex">
+            <button class="btn btn-prev btn-icon btn-sm btn-outline-primary rounded-circle ms-3" type="button" id="devices-prev" aria-label="{% trans 'Anterior' %}">
+                <i class="ai-arrow-left"></i>
+            </button>
+            <button class="btn btn-next btn-icon btn-sm btn-outline-primary rounded-circle ms-3" type="button" id="devices-next" aria-label="{% trans 'Siguiente' %}">
+                <i class="ai-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Slider -->
+    <div class="swiper" data-swiper-options='{
+        "slidesPerView": 1,
+        "spaceBetween": 24,
+        "loop": true,
+        "navigation": {
+            "prevEl": "#devices-prev",
+            "nextEl": "#devices-next"
+        },
+        "breakpoints": {
+            "500": {
+                "slidesPerView": 2
+            },
+            "768": {
+                "slidesPerView": 3
+            },
+            "1000": {
+                "slidesPerView": 4
+            }
+        }
+    }'>
+        <div class="swiper-wrapper">
+            {% for device in featured_devices %}
+            <!-- Item -->
+            <div class="swiper-slide h-auto">
+                <div class="card h-100 shadow-sm">
+                    {% if device.get_discount_percentage > 0 %}
+                    <span class="badge bg-danger position-absolute top-0 end-0 m-3" style="z-index: 2;">-{{ device.get_discount_percentage }}%</span>
+                    {% endif %}
+
+                    <a href="{{ device.get_frontend_url }}" class="text-decoration-none">
+                        {% if device.images.exists %}
+                        <div class="product-img p-3">
+                            <img class="d-block mx-auto" src="{{ device.images.first.image.url }}" alt="{{ device.name }}">
+                        </div>
+                        {% else %}
+                        <div class="product-img p-3 text-center">
+                            <i class="ai-box" style="font-size: 72px; color: #dee2e6;"></i>
+                        </div>
+                        {% endif %}
+                    </a>
+
+                    <div class="card-body pt-0">
+                        <h3 class="h6 mb-2">
+                            <a href="{{ device.get_frontend_url }}" class="text-decoration-none text-dark">{{ device.name|truncatechars:40 }}</a>
+                        </h3>
+
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div>
+                                {% if device.discount_price %}
+                                <span class="h6 text-primary mb-0">${{ device.discount_price }}</span>
+                                <del class="fs-sm text-body-secondary ms-2">${{ device.price }}</del>
+                                {% else %}
+                                <span class="h6 text-primary mb-0">${{ device.price }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <a href="{{ device.get_frontend_url }}" class="btn btn-outline-primary btn-sm w-100">
+                            <i class="ai-cart me-2"></i>{% trans "Ver detalles" %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Read more button -->
+    <div class="text-center pt-4 mt-2 mt-lg-0 pt-lg-5">
+        <a class="btn btn-outline-primary" href="{% url 'landing:shop_catalog' %}?type=PHYSICAL">{% trans "Ver todos los dispositivos" %}</a>
+        <p class="text-muted mt-2 mb-0">{% trans "*Dispositivos disponibles solo para estudiantes certificados" %}</p>
+    </div>
+</section>
+{% endif %}

@@ -1,0 +1,136 @@
+{% load static %}
+{% load i18n %}
+
+<!-- Cursos disponibles (Carousel) -->
+{% if featured_courses %}
+<section id="cursos" class="py-5" style="background-color: #f8f9fa !important;">
+    <div class="container pb-5 mb-lg-3 mb-xl-4 mb-xxl-5">
+      <div class="d-flex align-items-center justify-content-between pb-4 mb-2 mb-md-3">
+        <h2 class="h1 pt-1 mb-0">{% trans "Cursos de Capacitación" %}</h2>
+        <!-- Slider prev/next buttons -->
+        <div class="d-flex">
+            <button class="btn btn-prev btn-icon btn-sm btn-outline-primary rounded-circle ms-3" type="button" id="courses-prev" aria-label="{% trans 'Anterior' %}">
+                <i class="ai-arrow-left"></i>
+            </button>
+            <button class="btn btn-next btn-icon btn-sm btn-outline-primary rounded-circle ms-3" type="button" id="courses-next" aria-label="{% trans 'Siguiente' %}">
+                <i class="ai-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Slider -->
+    <div class="swiper" data-swiper-options='{
+        "slidesPerView": 1,
+        "spaceBetween": 24,
+        "loop": true,
+        "navigation": {
+            "prevEl": "#courses-prev",
+            "nextEl": "#courses-next"
+        },
+        "breakpoints": {
+            "500": {
+                "slidesPerView": 2
+            },
+            "768": {
+                "slidesPerView": 3
+            },
+            "1000": {
+                "slidesPerView": 4
+            }
+        }
+    }'>
+        <div class="swiper-wrapper">
+            {% for course in featured_courses %}
+            <!-- Item -->
+            <div class="swiper-slide h-auto">
+                <div class="card h-100 shadow-sm">
+                    {% if course.get_discount_percentage > 0 %}
+                    <span class="badge bg-danger position-absolute top-0 end-0 m-3" style="z-index: 2;">-{{ course.get_discount_percentage }}%</span>
+                    {% elif course.is_new %}
+                    <span class="badge bg-primary position-absolute top-0 end-0 m-3" style="z-index: 2;">{% trans "Nuevo" %}</span>
+                    {% endif %}
+
+                    <a href="{{ course.get_frontend_url }}" class="text-decoration-none">
+                        <div class="product-img p-3 text-center">
+                            <i class="ai-book-open" style="font-size: 72px; color: #448c74;"></i>
+                        </div>
+                    </a>
+
+                    <div class="card-body pt-0">
+                        <h3 class="h6 mb-2">
+                            <a href="{{ course.get_frontend_url }}" class="text-decoration-none text-dark">{{ course.name|truncatechars:40 }}</a>
+                        </h3>
+
+                        <div class="d-flex align-items-center mb-3 gap-2">
+                            {% if course.course_duration_hours %}
+                            <span class="badge bg-light text-body">{{ course.course_duration_hours }}h</span>
+                            {% endif %}
+                            <span class="badge bg-success-subtle text-success">{% trans "Certificado" %}</span>
+                        </div>
+
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div>
+                                {% if course.discount_price %}
+                                <span class="h6 text-primary mb-0">${{ course.discount_price }}</span>
+                                <del class="fs-sm text-body-secondary ms-2">${{ course.price }}</del>
+                                {% else %}
+                                <span class="h6 text-primary mb-0">${{ course.price }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <a href="{{ course.get_frontend_url }}" class="btn btn-outline-primary btn-sm w-100">
+                            <i class="ai-arrow-right me-2"></i>{% trans "Ver curso" %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+            <!-- Paquete Completo -->
+            {% if featured_courses|length > 2 %}
+            <div class="swiper-slide h-auto">
+                <div class="card h-100 shadow-sm border-primary">
+                    <span class="badge bg-warning text-dark position-absolute top-0 end-0 m-3" style="z-index: 2;">{% trans "Más Popular" %}</span>
+
+                    <a href="{% url 'landing:shop_catalog' %}?type=COURSE" class="text-decoration-none">
+                        <div class="product-img p-3 text-center">
+                            <i class="ai-award" style="font-size: 72px; color: #ffc107;"></i>
+                        </div>
+                    </a>
+
+                    <div class="card-body pt-0">
+                        <h3 class="h6 mb-2">
+                            <a href="{% url 'landing:shop_catalog' %}?type=COURSE" class="text-decoration-none text-dark">{% trans "Paquete Completo" %}</a>
+                        </h3>
+
+                        <div class="d-flex align-items-center mb-3 gap-2">
+                            <span class="badge bg-light text-body">180+ {% trans "horas" %}</span>
+                            <span class="badge bg-success-subtle text-success">{% trans "Certificados" %}</span>
+                        </div>
+
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div>
+                                <span class="h6 text-primary mb-0">$897</span>
+                                <del class="fs-sm text-body-secondary ms-2">$1,325</del>
+                            </div>
+                        </div>
+
+                        <a href="{% url 'landing:shop_catalog' %}?type=COURSE" class="btn btn-primary btn-sm w-100">
+                            <i class="ai-award me-2"></i>{% trans "Ver paquete" %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+      <!-- Call to action para cursos -->
+      <div class="text-center pt-4 mt-2 mt-lg-0 pt-lg-5">
+          <a class="btn btn-primary btn-lg" href="{% url 'landing:shop_catalog' %}?type=COURSE">{% trans "Ver todos los cursos" %}</a>
+          <p class="text-muted mt-2">{% trans "Formación disponible en español, inglés y portugués" %}</p>
+      </div>
+    </div>
+</section>
+{% endif %}

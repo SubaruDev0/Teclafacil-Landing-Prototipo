@@ -1,0 +1,117 @@
+{% extends 'landing/base.html' %}
+{% block content %}
+<div class="container" style="padding:4rem 5rem;">
+  <div class="row justify-content-center">
+    <div class="col-10">
+      <div class="card">
+        <h2 class="mb-3">Reserva tu TeclaFácil</h2>
+        <p class="lead">Completa tus datos para reservar. El depósito es 100% reembolsable.</p>
+        <form method="post" class="mt-4">
+          {% csrf_token %}
+          <div class="row">
+            <div class="col-6 mb-4">
+              <label for="{{ form.nombre.id_for_label }}" class="form-label">Nombre completo</label>
+              {{ form.nombre }}
+            </div>
+            <div class="col-6 mb-4">
+              <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
+              {{ form.email }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-6 mb-4">
+              <label for="{{ form.telefono.id_for_label }}" class="form-label">Teléfono (opcional)</label>
+              {{ form.telefono }}
+            </div>
+            <div class="col-6 mb-4">
+              <label for="{{ form.tipo.id_for_label }}" class="form-label">Tipo de compra</label>
+              {{ form.tipo }}
+            </div>
+          </div>
+
+          <div id="chosen-info" class="alert alert-info">
+            Has elegido: <strong id="chosen-title" style="color:var(--accent-2);">Kit Profesional (Teclado + mouse + audífonos)</strong> — <span id="chosen-price" style="color:var(--text-light);font-weight:600;">{{ initial_product_price }}</span>
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center mt-5" style="padding:2rem;background:rgba(27,156,217,0.08);border-radius:12px;border:1px solid rgba(27,156,217,0.3);">
+            <div>
+              <div style="font-size:1.3rem;color:var(--muted);margin-bottom:0.5rem;">Depósito reembolsable</div>
+              <div id="deposit-amount" style="font-size:2.5rem;color:var(--accent-2);font-weight:800;">{{ initial_deposit }}</div>
+            </div>
+            <button id="reservar-submit" class="btn btn-primary btn-lg reservar-submit" type="submit">
+              {% if initial_deposit == 'CLP $0' %}Solicitar piloto empresarial{% else %}Reservar y pagar {{ initial_deposit }}{% endif %}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  const tipoSelect = document.querySelector('select[name="tipo"]');
+  const chosenTitle = document.getElementById('chosen-title');
+  const chosenPrice = document.getElementById('chosen-price');
+  const depositDisplay = document.getElementById('deposit-amount');
+  const submitBtn = document.getElementById('reservar-submit');
+  function updateChosen(){
+    const v = getTipoValue();
+    if(!v) return; // nothing selected yet
+    let productPrice = '';
+    let deposit = '';
+    if(v === 'teclado'){
+      chosenTitle.textContent = 'TeclaFácil (solo)';
+      productPrice = 'CLP $50.000';
+      deposit = 'CLP $50.000';
+    } else if(v === 'kit'){
+      chosenTitle.textContent = 'Kit Profesional (Teclado + mouse + audífonos)';
+      productPrice = 'CLP $80.000';
+      deposit = 'CLP $80.000';
+    } else if(v === 'pilot'){
+      chosenTitle.textContent = 'Programa Piloto (Empresas) — Incluye soporte y métricas';
+      productPrice = 'CLP $200.000';
+      deposit = 'CLP $0';
+    }
+    if(chosenPrice) chosenPrice.textContent = productPrice;
+    if(depositDisplay) depositDisplay.textContent = deposit;
+    if(submitBtn){
+      if(v === 'pilot'){
+        submitBtn.innerText = 'Solicitar piloto empresarial';
+      } else {
+        submitBtn.innerText = 'Reservar y pagar depósito reembolsable ' + deposit;
+      }
+    }
+  }
+  // soporte para select o radios
+  function getTipoValue(){
+    if(tipoSelect) return tipoSelect.value;
+    // buscar radios
+    const radios = document.querySelectorAll('input[name="tipo"]');
+    if(radios && radios.length){
+      for(const r of radios){ if(r.checked) return r.value }
+      return radios[0].value;
+    }
+    return null;
+  }
+
+  // delegate change events: handle select or radio changes reliably
+  document.addEventListener('change', function(e){
+    const t = e.target;
+    if(!t) return;
+    if(t.name === 'tipo'){
+      updateChosen();
+    }
+  });
+
+  // inicializar con el valor actual (respects select or radio)
+  updateChosen();
+
+  // adicional: poll para detectar cambios en casos edge (render diferentes)
+  let lastTipo = getTipoValue();
+  setInterval(function(){
+    const cur = getTipoValue();
+    if(cur !== lastTipo){ lastTipo = cur; updateChosen(); }
+  }, 250);
+});
+</script>
+{% endblock %}

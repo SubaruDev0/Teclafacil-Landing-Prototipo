@@ -1,0 +1,207 @@
+{% load i18n %}
+<!-- Add to Cart Form Component -->
+<form method="post" action="{% url 'shop:cart-add' product.id %}" class="add-to-cart-form">
+    {% csrf_token %}
+
+    <!-- Variaciones del producto si existen -->
+    {% if cart_form.variation %}
+    <div class="mb-3">
+        <label for="{{ cart_form.variation.id_for_label }}" class="form-label">
+            {{ cart_form.variation.label }}
+        </label>
+        {{ cart_form.variation }}
+    </div>
+    {% endif %}
+
+    <!-- Selector de cantidad -->
+    <div class="mb-3">
+        <label for="{{ cart_form.quantity.id_for_label }}" class="form-label">
+            {{ cart_form.quantity.label }}
+        </label>
+        <div class="input-group" style="max-width: 200px;">
+            <button type="button" class="btn btn-outline-secondary" onclick="decreaseQuantity('{{ cart_form.quantity.id_for_label }}')">
+                <i class="bi bi-dash"></i>
+            </button>
+            {{ cart_form.quantity }}
+            <button type="button" class="btn btn-outline-secondary" onclick="increaseQuantity('{{ cart_form.quantity.id_for_label }}')">
+                <i class="bi bi-plus"></i>
+            </button>
+        </div>
+    </div>
+
+    {{ cart_form.update }}
+
+    <!-- Información de disponibilidad -->
+    <div class="mb-3">
+        {% if product.is_physical %}
+            {% if product.is_in_stock %}
+                <span class="badge bg-success">
+                    <i class="bi bi-check-circle"></i> {% trans "En Stock" %} ({{ product.stock }} {% trans "disponibles" %})
+                </span>
+            {% else %}
+                <span class="badge bg-danger">
+                    <i class="bi bi-x-circle"></i> {% trans "Sin Stock" %}
+                </span>
+            {% endif %}
+        {% elif product.is_course %}
+            <span class="badge bg-info">
+                <i class="bi bi-mortarboard"></i> {% trans "Curso Digital - Acceso Inmediato" %}
+            </span>
+        {% else %}
+            <span class="badge bg-primary">
+                <i class="bi bi-download"></i> {% trans "Producto Digital - Descarga Inmediata" %}
+            </span>
+        {% endif %}
+    </div>
+
+    <!-- Precios -->
+    <div class="mb-4">
+        {% if product.discount_price %}
+            <div class="d-flex align-items-center gap-2">
+                <span class="h4 text-danger mb-0">${{ product.discount_price }}</span>
+                <span class="text-muted text-decoration-line-through">${{ product.price }}</span>
+                <span class="badge bg-danger">-{{ product.get_discount_percentage }}%</span>
+            </div>
+        {% else %}
+            <span class="h4 text-primary mb-0">${{ product.price }}</span>
+        {% endif %}
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="d-grid gap-2">
+        {% if product.is_physical and not product.is_in_stock %}
+            <button type="button" class="btn btn-secondary btn-lg" disabled>
+                <i class="bi bi-x-circle"></i> {% trans "Sin Stock" %}
+            </button>
+        {% else %}
+            <button type="submit" class="btn btn-primary btn-lg add-to-cart-btn">
+                <i class="bi bi-cart-plus"></i> {% trans "Agregar al Carrito" %}
+            </button>
+        {% endif %}
+
+        <a href="{% url 'shop:cart-detail' %}" class="btn btn-outline-primary">
+            <i class="bi bi-cart"></i> {% trans "Ver Carrito" %}
+        </a>
+    </div>
+</form>
+
+{% trans "Agregando..." as adding_text %}
+{% trans "Agregado" as added_text %}
+{% trans "Error al agregar al carrito" as add_error_text %}
+{% trans "Error de conexión" as connection_error_text %}
+
+<script>
+const ADDING_TEXT = "{{ adding_text|escapejs }}";
+const ADDED_TEXT = "{{ added_text|escapejs }}";
+const ADD_ERROR_TEXT = "{{ add_error_text|escapejs }}";
+const CONNECTION_ERROR_TEXT = "{{ connection_error_text|escapejs }}";
+
+// Funciones para incrementar/decrementar cantidad
+function increaseQuantity(fieldId) {
+    const field = document.getElementById(fieldId);
+    const currentValue = parseInt(field.value) || 1;
+    const maxValue = parseInt(field.max) || 999;
+
+    if (currentValue < maxValue) {
+        field.value = currentValue + 1;
+    }
+}
+
+function decreaseQuantity(fieldId) {
+    const field = document.getElementById(fieldId);
+    const currentValue = parseInt(field.value) || 1;
+    const minValue = parseInt(field.min) || 1;
+
+    if (currentValue > minValue) {
+        field.value = currentValue - 1;
+    }
+}
+
+// Manejo AJAX del formulario
+document.addEventListener('DOMContentLoaded', function() {
+    const addToCartForms = document.querySelectorAll('.add-to-cart-form');
+
+    addToCartForms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const submitBtn = form.querySelector('.add-to-cart-btn');
+            const originalText = submitBtn.innerHTML;
+
+            // Mostrar loading
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>' + ADDING_TEXT;
+
+            const formData = new FormData(form);
+
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Actualizar contador del carrito
+                    const cartCount = document.querySelector('.cart-count');
+                    if (cartCount) {
+                        cartCount.textContent = data.cart_count;
+                    } else if (data.cart_count > 0) {
+                        // Crear el badge si no existe
+                        const cartIcon = document.querySelector('.cart-icon-wrapper a');
+                        if (cartIcon) {
+                            const badge = document.createElement('span');
+                            badge.className = 'position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-count';
+                            badge.textContent = data.cart_count;
+                            cartIcon.appendChild(badge);
+                        }
+                    }
+
+                    // Mostrar notificación de éxito
+                    showNotification(data.message, 'success');
+
+                    // Cambiar el botón temporalmente
+                    submitBtn.innerHTML = '<i class="bi bi-check-circle"></i> ' + ADDED_TEXT;
+                    submitBtn.classList.remove('btn-primary');
+                    submitBtn.classList.add('btn-success');
+
+                    setTimeout(() => {
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.classList.remove('btn-success');
+                        submitBtn.classList.add('btn-primary');
+                        submitBtn.disabled = false;
+                    }, 2000);
+                } else {
+                    // Mostrar error
+                    showNotification(data.message || ADD_ERROR_TEXT, 'danger');
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
+            })
+            .catch(error => {
+                showNotification(CONNECTION_ERROR_TEXT, 'danger');
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            });
+        });
+    });
+});
+
+// Función para mostrar notificaciones
+function showNotification(message, type) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3`;
+    alertDiv.style.zIndex = '9999';
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    document.body.appendChild(alertDiv);
+
+    setTimeout(() => {
+        alertDiv.remove();
+    }, 3000);
+}
+</script>

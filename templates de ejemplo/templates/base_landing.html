@@ -1,0 +1,56 @@
+{% extends 'base_master.html' %}
+{% load static %}
+
+{# Override title if needed #}
+{% block title %}{{ block.super }}{% endblock title %}
+
+{# Override description if needed #}
+{% block description %}{{ block.super }}{% endblock description %}
+
+{# Extra vendor styles - Override this in child templates if needed #}
+{% block vendor_styles %}
+  {{ block.super }}
+{% endblock vendor_styles %}
+
+{# Custom CSS for landing pages - Override this in child templates #}
+{% block extra_css %}
+  {# Child templates can add their custom CSS here #}
+{% endblock extra_css %}
+
+{# Inline styles - Override this in child templates if needed #}
+{% block inline_styles %}
+  {# Child templates can add inline styles here #}
+{% endblock inline_styles %}
+
+{# Override body attributes for landing pages #}
+{% block body_attributes %}class="stretched"{% endblock body_attributes %}
+
+{# Main content wrapper with header, content, and footer #}
+{% block main_content %}
+
+  {# Top Bar #}
+  {% block top-bar %}
+    {% include 'snippets/frontend/top-bar-base.html' %}
+  {% endblock top-bar %}
+
+  {# Header / Navbar #}
+  {% block header %}
+    {% include 'snippets/frontend/header-base.html' %}
+  {% endblock header %}
+
+  {# Content block for child templates #}
+  {% block content %}
+  {# Child templates will override this block with their specific content #}
+  {% endblock content %}
+
+  {# Footer #}
+  {% block footer %}
+    {% include 'snippets/frontend/footer-base.html' %}
+  {% endblock footer %}
+
+{% endblock main_content %}
+
+{# Custom JavaScript for landing pages - Override this in child templates #}
+{% block extra_js %}
+  {# Child templates can add their custom JavaScript here #}
+{% endblock extra_js %}

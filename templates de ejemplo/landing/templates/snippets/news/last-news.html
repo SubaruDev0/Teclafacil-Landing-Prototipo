@@ -1,0 +1,49 @@
+{% load i18n blog_extras %}
+
+<div class="sidebar-widget sidebar-section">
+    <h4 class="sidebar-title">{% trans "Últimas noticias" %}</h4>
+    <div class="list-group list-group-flush">
+        {% if latest_posts %}
+            {% for item in latest_posts %}
+                <a href="{% post_link_url item %}" class="list-group-item list-group-item-action d-flex align-items-center p-2 text-decoration-none">
+                    {% get_post_image_url item as item_image %}
+                    {% if item_image %}
+                        <img src="{{ item_image }}" alt="{{ item.title }}" width="72" height="54" class="rounded me-3" style="object-fit: cover;">
+                    {% endif %}
+                    <div class="small">
+                        {{ item.title|truncatechars:70 }}
+                        <div class="text-muted fs-xs">{{ item.publish|date:"d M Y" }}</div>
+                    </div>
+                </a>
+            {% endfor %}
+        {% elif latest_news %}
+            {% for item in latest_news %}
+                <a href="{% post_link_url item %}" class="list-group-item list-group-item-action d-flex align-items-center p-2 text-decoration-none">
+                    {% get_post_image_url item as item_image %}
+                    {% if item_image %}
+                        <img src="{{ item_image }}" alt="{{ item.title }}" width="72" height="54" class="rounded me-3" style="object-fit: cover;">
+                    {% endif %}
+                    <div class="small">
+                        {{ item.title|truncatechars:70 }}
+                        <div class="text-muted fs-xs">{{ item.publish|date:"d M Y" }}</div>
+                    </div>
+                </a>
+            {% endfor %}
+        {% elif last_news %}
+            {% for item in last_news %}
+                <a href="{% post_link_url item %}" class="list-group-item list-group-item-action d-flex align-items-center p-2 text-decoration-none">
+                    {% get_post_image_url item as item_image %}
+                    {% if item_image %}
+                        <img src="{{ item_image }}" alt="{{ item.title }}" width="72" height="54" class="rounded me-3" style="object-fit: cover;">
+                    {% endif %}
+                    <div class="small">
+                        {{ item.title|truncatechars:70 }}
+                        <div class="text-muted fs-xs">{{ item.publish|date:"d M Y" }}</div>
+                    </div>
+                </a>
+            {% endfor %}
+        {% else %}
+            <p class="mb-0">{% trans "No hay noticias recientes." %}</p>
+        {% endif %}
+    </div>
+</div>

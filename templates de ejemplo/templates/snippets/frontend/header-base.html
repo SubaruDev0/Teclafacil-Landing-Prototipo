@@ -1,0 +1,213 @@
+{% load static %}
+{% load i18n %}
+{% get_current_language as CURRENT_LANGUAGE %}
+{% get_available_languages as AVAILABLE_LANGUAGES %}
+{% get_language_info_list for AVAILABLE_LANGUAGES as languages %}
+
+<header id="header" data-sticky-shrink="false">
+    <div id="header-wrap">
+        <div class="container">
+            <div class="header-row justify-content-lg-between">
+
+                <nav class="primary-menu top-primary-menu col-lg-5 order-last order-lg-first">
+
+                    <ul class="menu-container">
+                        <li class="menu-item"><a class="menu-link" href="{% url 'landing:home' %}"><div>Inicio</div></a></li>
+                        <li class="menu-item"><a class="menu-link" href="{% url 'landing:shop_catalog' %}"><div>Cursos</div></a>
+                            <ul class="sub-menu-container">
+                                <li class="menu-item">
+                                    <a class="menu-link" href="{% url 'landing:shop_catalog' %}?type=COURSE"><div>Todos los Cursos</div></a>
+                                </li>
+                                <li class="menu-item">
+                                    <a class="menu-link" href="{% url 'landing:shop_catalog' %}?type=COURSE&category=programacion"><div>Programación</div></a>
+                                </li>
+                                <li class="menu-item">
+                                    <a class="menu-link" href="{% url 'landing:shop_catalog' %}?type=COURSE&category=diseno"><div>Diseño</div></a>
+                                </li>
+                                <li class="menu-item">
+                                    <a class="menu-link" href="{% url 'landing:shop_catalog' %}?type=COURSE&category=negocios"><div>Negocios</div></a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="menu-item"><a class="menu-link" href="{% url 'landing:shop_catalog' %}?type=PHYSICAL"><div>Dispositivos</div></a></li>
+                        <li class="menu-item"><a class="menu-link" href="{% url 'landing:news_list' %}"><div>Blog</div></a></li>
+                        <li class="menu-item"><a class="menu-link" href="#"><div>Contacto</div></a></li>
+                        {% if user.is_authenticated %}
+                        <li class="menu-item d-block d-lg-none">
+                            <a class="menu-link" href="{% url 'customer:dashboard' %}"><div>Mi Cuenta</div></a>
+                        </li>
+                        {% else %}
+                            {% if request.path != '/account/login/' and '/account/login' not in request.path %}
+                            <li class="menu-item d-block d-lg-none">
+                                <a class="menu-link" href="{% url 'customer:login' %}"><div>Acceso Estudiantes</div></a>
+                            </li>
+                            {% endif %}
+                        {% endif %}
+                    </ul>
+
+                </nav><!-- #primary-menu end -->
+
+                <!-- Logo
+                ============================================= -->
+                <div id="logo" class="mx-lg-auto col-lg-2 justify-content-center">
+                    <a href="{% url 'landing:home' %}">
+                        <img class="logo-default" srcset="{% static 'frontend/images/logo.png' %}, {% static 'frontend/images/logo.png' %} 2x" src="{% static 'frontend/images/logo.png' %}" alt="Hector Academy">
+                    </a>
+                </div><!-- #logo end -->
+
+                <div class="col-lg-5 d-flex justify-content-end align-items-center">
+
+                    <!-- Language Switcher -->
+                    {% if AVAILABLE_LANGUAGES|length > 1 %}
+                    <div class="header-misc-icon me-2">
+                        <a href="#" id="language-switcher-trigger" class="d-flex align-items-center" style="color: var(--hector-navy);">
+                            <i class="uil uil-globe" style="font-size: 1.5rem; color: var(--hector-cyan);"></i>
+                        </a>
+                        <div class="top-language-content" style="display: none; position: absolute; background: white; border: 1px solid #eee; border-radius: 5px; padding: 10px; margin-top: 10px; min-width: 200px; max-height: 400px; overflow-y: auto; box-shadow: 0 5px 15px rgba(0,0,0,0.1); z-index: 999;">
+                            <div class="top-language-title" style="padding-bottom: 10px; margin-bottom: 10px; border-bottom: 1px solid #eee;">
+                                <h4 style="margin: 0; font-size: 14px; color: var(--hector-navy);">{% trans "Seleccionar Idioma" %}</h4>
+                            </div>
+                            {% for language in languages %}
+                            <form action="{% url 'set_language' %}" method="post" style="margin-bottom: 5px;">
+                                {% csrf_token %}
+                                <input name="next" type="hidden" value="{{ request.path }}">
+                                <input name="language" type="hidden" value="{{ language.code }}">
+                                <button type="submit" style="width: 100%; text-align: left; padding: 8px 10px; border: none; background: {% if language.code == CURRENT_LANGUAGE %}#f0f0f0{% else %}transparent{% endif %}; cursor: pointer; border-radius: 3px; display: flex; align-items: center; color: var(--hector-navy);" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='{% if language.code == CURRENT_LANGUAGE %}#f0f0f0{% else %}transparent{% endif %}'">
+                                    {% if language.code == 'es' %}
+                                        <img src="https://flagcdn.com/16x12/es.png" alt="ES" style="margin-right: 8px;">Español
+                                    {% elif language.code == 'en' %}
+                                        <img src="https://flagcdn.com/16x12/gb.png" alt="EN" style="margin-right: 8px;">English
+                                    {% elif language.code == 'pt' %}
+                                        <img src="https://flagcdn.com/16x12/br.png" alt="PT" style="margin-right: 8px;">Português
+                                    {% elif language.code == 'fr' %}
+                                        <img src="https://flagcdn.com/16x12/fr.png" alt="FR" style="margin-right: 8px;">Français
+                                    {% elif language.code == 'de' %}
+                                        <img src="https://flagcdn.com/16x12/de.png" alt="DE" style="margin-right: 8px;">Deutsch
+                                    {% elif language.code == 'it' %}
+                                        <img src="https://flagcdn.com/16x12/it.png" alt="IT" style="margin-right: 8px;">Italiano
+                                    {% elif language.code == 'nl' %}
+                                        <img src="https://flagcdn.com/16x12/nl.png" alt="NL" style="margin-right: 8px;">Nederlands
+                                    {% elif language.code == 'pl' %}
+                                        <img src="https://flagcdn.com/16x12/pl.png" alt="PL" style="margin-right: 8px;">Polski
+                                    {% elif language.code == 'el' %}
+                                        <img src="https://flagcdn.com/16x12/gr.png" alt="EL" style="margin-right: 8px;">Ελληνικά
+                                    {% elif language.code == 'sk' %}
+                                        <img src="https://flagcdn.com/16x12/sk.png" alt="SK" style="margin-right: 8px;">Slovenčina
+                                    {% elif language.code == 'sl' %}
+                                        <img src="https://flagcdn.com/16x12/si.png" alt="SL" style="margin-right: 8px;">Slovenščina
+                                    {% elif language.code == 'sv' %}
+                                        <img src="https://flagcdn.com/16x12/se.png" alt="SV" style="margin-right: 8px;">Svenska
+                                    {% elif language.code == 'tr' %}
+                                        <img src="https://flagcdn.com/16x12/tr.png" alt="TR" style="margin-right: 8px;">Türkçe
+                                    {% elif language.code == 'bg' %}
+                                        <img src="https://flagcdn.com/16x12/bg.png" alt="BG" style="margin-right: 8px;">Български
+                                    {% elif language.code == 'ar' %}
+                                        <img src="https://flagcdn.com/16x12/sa.png" alt="AR" style="margin-right: 8px;">العربية
+                                    {% elif language.code == 'fa' %}
+                                        <img src="https://flagcdn.com/16x12/ir.png" alt="FA" style="margin-right: 8px;">فارسی
+                                    {% elif language.code == 'hi' %}
+                                        <img src="https://flagcdn.com/16x12/in.png" alt="HI" style="margin-right: 8px;">हिन्दी
+                                    {% elif language.code == 'hu' %}
+                                        <img src="https://flagcdn.com/16x12/hu.png" alt="HU" style="margin-right: 8px;">Magyar
+                                    {% elif language.code == 'hr' %}
+                                        <img src="https://flagcdn.com/16x12/hr.png" alt="HR" style="margin-right: 8px;">Hrvatski
+                                    {% endif %}
+                                </button>
+                            </form>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Top Account Link with Icon -->
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'customer:dashboard' %}" class="d-flex align-items-center text-decoration-none me-3" style="color: var(--hector-navy);">
+                            <i class="bi-mortarboard-fill me-2" style="font-size: 1.5rem; color: var(--hector-cyan);"></i>
+                            <span class="d-none d-md-inline-block fw-medium">Mi Cuenta</span>
+                        </a>
+                    {% else %}
+                        {% if request.path != '/account/login/' and '/account/login' not in request.path %}
+                        <a href="{% url 'customer:login' %}" class="d-flex align-items-center text-decoration-none me-3" style="color: var(--hector-navy);">
+                            <i class="bi-mortarboard-fill me-2" style="font-size: 1.5rem; color: var(--hector-cyan);"></i>
+                            <span class="d-none d-md-inline-block fw-medium">Acceso Estudiantes</span>
+                        </a>
+                        {% endif %}
+                    {% endif %}
+
+                    <!-- Top Cart -->
+                    <div id="top-cart" class="header-misc-icon">
+                        <a href="{% url 'shop:cart-detail' %}" id="top-cart-trigger">
+                            <i class="uil uil-shopping-bag"></i>
+                            <span class="top-cart-number">{{ cart|length }}</span>
+                        </a>
+                        <div class="top-cart-content">
+                            <div class="top-cart-title">
+                                <h4>Carrito</h4>
+                            </div>
+                            {% if cart|length > 0 %}
+                                <div class="top-cart-items">
+                                    {% for item in cart %}
+                                        <div class="top-cart-item">
+                                            <div class="top-cart-item-desc">
+                                                <a href="{% url 'landing:product_detail' item.product.slug %}">{{ item.product.name }}</a>
+                                                <span class="top-cart-item-price">${{ item.price }} x {{ item.quantity }}</span>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="top-cart-action clearfix">
+                                    <span class="top-checkout-price">${{ cart.get_total_price }}</span>
+                                    <a href="{% url 'shop:cart-detail' %}" class="button button-3d button-small m-0">Ver Carrito</a>
+                                </div>
+                            {% else %}
+                                <p class="m-5">Tu carrito está vacío</p>
+                            {% endif %}
+                        </div>
+                    </div><!-- #top-cart end -->
+
+                </div>
+
+                <div class="primary-menu-trigger">
+                    <button class="cnvs-hamburger" type="button" title="Open Mobile Menu">
+                        <span class="cnvs-hamburger-box"><span class="cnvs-hamburger-inner"></span></span>
+                    </button>
+                </div>
+
+                <!-- Primary Navigation
+                ============================================= -->
+
+                <form class="top-search-form" action="#" method="get">
+                    <input type="text" name="q" class="form-control" value="" placeholder="Buscar cursos..." autocomplete="off">
+                </form>
+
+            </div>
+        </div>
+    </div>
+    <div class="header-wrap-clone"></div>
+</header>
+
+<script>
+// Language Switcher Toggle
+document.addEventListener('DOMContentLoaded', function() {
+    var languageTrigger = document.getElementById('language-switcher-trigger');
+    var languageContent = document.querySelector('.top-language-content');
+
+    if (languageTrigger && languageContent) {
+        languageTrigger.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (languageContent.style.display === 'none' || languageContent.style.display === '') {
+                languageContent.style.display = 'block';
+            } else {
+                languageContent.style.display = 'none';
+            }
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!languageTrigger.contains(e.target) && !languageContent.contains(e.target)) {
+                languageContent.style.display = 'none';
+            }
+        });
+    }
+});
+</script>

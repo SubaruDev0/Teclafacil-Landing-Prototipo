@@ -1,0 +1,54 @@
+{% load static %}
+{% load i18n %}
+
+<section id="contacto" class="cta-section">
+  <div class="container">
+    <div class="row align-items-center" style="gap:3rem;">
+      <div class="col-6">
+        <h2>¿Listo para probar TeclaFácil?</h2>
+        <p class="lead">Reserva ahora tu Kit Profesional con depósito reembolsable y únete a programadores que ya mejoraron su confort.</p>
+        <div style="background:rgba(27,156,217,0.1);padding:2rem;border-radius:12px;border:1px solid rgba(27,156,217,0.3);margin-top:2rem;">
+          <h4 style="color:var(--accent-2);margin-bottom:1rem;font-size:1.5rem;">Incluye:</h4>
+          <ul style="list-style:none;padding:0;margin:0;">
+            <li style="padding:0.5rem 0;font-size:1.2rem;">✓ Teclado ergonómico TeclaFácil</li>
+            <li style="padding:0.5rem 0;font-size:1.2rem;">✓ Mouse ergonómico</li>
+            <li style="padding:0.5rem 0;font-size:1.2rem;">✓ Audífonos de calidad</li>
+            <li style="padding:0.5rem 0;font-size:1.2rem;">✓ Soporte técnico incluido</li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-5">
+        <div style="background:rgba(20,25,46,0.8);padding:2.5rem;border-radius:16px;border:1px solid rgba(27,156,217,0.3);">
+          <h3 style="color:var(--accent-2);margin-bottom:1.5rem;font-size:1.8rem;">Reserva tu kit ahora</h3>
+          <label for="cta-email" class="form-label">Ingresa tu email para continuar</label>
+          <input id="cta-email" class="form-control mb-3" type="email" placeholder="tu@ejemplo.com" style="margin-bottom:1rem !important;">
+          <button id="cta-reserve" class="btn btn-primary btn-lg w-100" type="button">Reservar Kit — CLP $80.000</button>
+          <p style="text-align:center;margin-top:1rem;font-size:0.95rem;color:var(--muted);">Depósito 100% reembolsable</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+// Enlace CTA: abrir /reservar/?email=...&tipo=kit
+document.addEventListener('DOMContentLoaded', function(){
+  var btn = document.getElementById('cta-reserve');
+  var input = document.getElementById('cta-email');
+  if(btn){
+    btn.addEventListener('click', function(){
+      var email = input.value || '';
+      var url = "{% url 'landing:reservar' %}" + (email ? ('?email=' + encodeURIComponent(email) + '&tipo=kit') : '?tipo=kit');
+      window.location.href = url;
+    });
+  }
+  // También permitir presionar Enter en el input
+  if(input){
+    input.addEventListener('keypress', function(e){
+      if(e.key === 'Enter'){
+        btn.click();
+      }
+    });
+  }
+});
+</script>

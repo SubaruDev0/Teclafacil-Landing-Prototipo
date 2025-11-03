@@ -1,0 +1,332 @@
+{% extends 'frontend/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Catálogo - Hector Academy" %}{% endblock %}
+
+{% block meta_description %}{% trans "Explora nuestro catálogo de cursos, dispositivos médicos y recursos educativos para terapias complementarias." %}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Page Header */
+    .page-header {
+        background: var(--hector-navy);
+        padding: 60px 0;
+        color: white;
+        margin-bottom: 40px;
+    }
+    .page-header h1,
+    .page-header h2,
+    .page-header h3,
+    .page-header h4,
+    .page-header h5,
+    .page-header h6,
+    .page-header p {
+        color: white !important;
+    }
+
+    /* Sidebar */
+    .sidebar {
+        position: sticky;
+        top: 20px;
+    }
+
+    /* Filter Section */
+    .filter-section {
+        background: white;
+        border: 1px solid #e5e5e5;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    .filter-section h5 {
+        margin-bottom: 15px;
+        font-weight: 600;
+    }
+
+    /* Product Grid */
+    .product-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 1px solid #e5e5e5;
+        height: 100%;
+    }
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+    .product-image {
+        height: 250px;
+        object-fit: cover;
+        width: 100%;
+    }
+    .product-image-contain {
+        height: 250px;
+        object-fit: contain;
+        width: 100%;
+        padding: 20px;
+        background: #f8f9fa;
+    }
+
+    /* Badge Styling */
+    .badge-featured {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background-color: var(--cnvs-themecolor);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+    }
+
+    /* Pagination */
+    .pagination .page-link {
+        color: var(--cnvs-themecolor);
+    }
+    .pagination .page-item.active .page-link {
+        background-color: var(--cnvs-themecolor);
+        border-color: var(--cnvs-themecolor);
+    }
+
+    /* Category Link */
+    .category-link {
+        display: block;
+        padding: 8px 15px;
+        color: #333;
+        text-decoration: none;
+        border-radius: 4px;
+        transition: all 0.3s;
+    }
+    .category-link:hover, .category-link.active {
+        background-color: var(--cnvs-themecolor);
+        color: white;
+    }
+
+    /* Breadcrumb Styling dentro del page-header */
+    .page-header .breadcrumb {
+        background: transparent;
+        padding: 0;
+        margin-bottom: 1rem;
+    }
+
+    .page-header .breadcrumb-item + .breadcrumb-item::before {
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .page-header .breadcrumb-item a {
+        color: rgba(255, 255, 255, 0.9);
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .page-header .breadcrumb-item a:hover {
+        color: white;
+    }
+
+    .page-header .breadcrumb-item.active {
+        color: rgba(255, 255, 255, 0.7);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'landing:home' %}">{% trans "Inicio" %}</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">{% trans "Tienda" %}</li>
+            </ol>
+        </nav>
+
+        <h1 class="display-5 fw-bold">{% trans "Catálogo de Productos" %}</h1>
+        <p class="lead">{% trans "Descubre nuestros cursos, dispositivos y recursos educativos" %}</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <!-- Sidebar Filters -->
+        <div class="col-lg-3">
+            <div class="sidebar">
+                <!-- Categories Filter -->
+                <div class="filter-section">
+                    <h5>{% trans "Categorías" %}</h5>
+                    <div class="d-flex flex-column gap-2">
+                        <a href="{% url 'landing:shop_catalog' %}" class="category-link {% if not selected_category %}active{% endif %}">
+                            {% trans "Todas" %} ({{ total_products }})
+                        </a>
+                        {% for category in categories %}
+                        <a href="?category={{ category.id }}" class="category-link {% if selected_category.id == category.id %}active{% endif %}">
+                            {{ category.name }} ({{ category.product_count }})
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Product Type Filter -->
+                <div class="filter-section">
+                    <h5>{% trans "Tipo de Producto" %}</h5>
+                    <div class="d-flex flex-column gap-2">
+                        <a href="?type=COURSE{% if selected_category %}&category={{ selected_category.id }}{% endif %}"
+                           class="category-link {% if product_type == 'COURSE' %}active{% endif %}">
+                            <i class="uil uil-graduation-cap"></i> {% trans "Cursos" %}
+                        </a>
+                        <a href="?type=PHYSICAL{% if selected_category %}&category={{ selected_category.id }}{% endif %}"
+                           class="category-link {% if product_type == 'PHYSICAL' %}active{% endif %}">
+                            <i class="uil uil-medical-square"></i> {% trans "Dispositivos" %}
+                        </a>
+                        <a href="?type=DIGITAL{% if selected_category %}&category={{ selected_category.id }}{% endif %}"
+                           class="category-link {% if product_type == 'DIGITAL' %}active{% endif %}">
+                            <i class="uil uil-file-download"></i> {% trans "Digitales" %}
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Price Filter -->
+                <div class="filter-section">
+                    <h5>{% trans "Rango de Precio" %}</h5>
+                    <form method="get" class="d-flex flex-column gap-2">
+                        {% if selected_category %}
+                        <input type="hidden" name="category" value="{{ selected_category.id }}">
+                        {% endif %}
+                        {% if product_type %}
+                        <input type="hidden" name="type" value="{{ product_type }}">
+                        {% endif %}
+
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text">$</span>
+                            <input type="number" name="min_price" class="form-control" placeholder="Min" value="{{ min_price }}">
+                        </div>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text">$</span>
+                            <input type="number" name="max_price" class="form-control" placeholder="Max" value="{{ max_price }}">
+                        </div>
+                        <button type="submit" class="btn btn-sm" style="background-color: var(--cnvs-themecolor); color: white;">
+                            {% trans "Aplicar" %}
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="col-lg-9">
+            <!-- Sort and Results Info -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <p class="mb-0 text-muted">
+                        {% trans "Mostrando" %} {{ products.start_index }} - {{ products.end_index }} {% trans "de" %} {{ products.paginator.count }} {% trans "productos" %}
+                    </p>
+                </div>
+                <div>
+                    <form method="get" class="d-inline">
+                        {% if selected_category %}
+                        <input type="hidden" name="category" value="{{ selected_category.id }}">
+                        {% endif %}
+                        {% if product_type %}
+                        <input type="hidden" name="type" value="{{ product_type }}">
+                        {% endif %}
+
+                        <select name="sort" class="form-select form-select-sm" onchange="this.form.submit()">
+                            <option value="">{% trans "Ordenar por" %}</option>
+                            <option value="newest" {% if sort == 'newest' %}selected{% endif %}>{% trans "Más recientes" %}</option>
+                            <option value="price_asc" {% if sort == 'price_asc' %}selected{% endif %}>{% trans "Precio: Menor a Mayor" %}</option>
+                            <option value="price_desc" {% if sort == 'price_desc' %}selected{% endif %}>{% trans "Precio: Mayor a Menor" %}</option>
+                            <option value="name" {% if sort == 'name' %}selected{% endif %}>{% trans "Nombre A-Z" %}</option>
+                        </select>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Products -->
+            {% if products %}
+            <div class="row">
+                {% for product in products %}
+                <div class="col-md-4 mb-4">
+                    <div class="product-card card">
+                        <div class="position-relative">
+                            {% if product.featured %}
+                            <span class="badge-featured">{% trans "Destacado" %}</span>
+                            {% endif %}
+
+                            {% with image=product.get_primary_image %}
+                            {% if image %}
+                            <img src="{{ image.image.url }}" class="{% if product.product_type == 'PHYSICAL' %}product-image-contain{% else %}product-image{% endif %}" alt="{{ product.name }}">
+                            {% else %}
+                            <div class="product-image-contain d-flex align-items-center justify-content-center">
+                                <i class="uil {% if product.product_type == 'COURSE' %}uil-graduation-cap{% elif product.product_type == 'PHYSICAL' %}uil-medical-square{% else %}uil-file-download{% endif %}" style="font-size: 5rem; color: #ccc;"></i>
+                            </div>
+                            {% endif %}
+                            {% endwith %}
+                        </div>
+
+                        <div class="card-body">
+                            {% if product.category %}
+                            <span class="badge bg-light text-dark mb-2">{{ product.category.name }}</span>
+                            {% endif %}
+
+                            <h5 class="card-title">{{ product.name }}</h5>
+                            <p class="card-text text-muted small">{{ product.short_description|truncatewords:15 }}</p>
+
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <span class="h5 mb-0" style="color: var(--cnvs-themecolor);">${{ product.price }}</span>
+                                <a href="{% url 'landing:product_detail' product.slug %}" class="btn btn-sm" style="background-color: var(--cnvs-themecolor); color: white;">
+                                    {% trans "Ver más" %}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if products.has_other_pages %}
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if products.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ products.previous_page_number }}{% if selected_category %}&category={{ selected_category.id }}{% endif %}{% if product_type %}&type={{ product_type }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">
+                            {% trans "Anterior" %}
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% for num in products.paginator.page_range %}
+                    <li class="page-item {% if products.number == num %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}{% if selected_category %}&category={{ selected_category.id }}{% endif %}{% if product_type %}&type={{ product_type }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">
+                            {{ num }}
+                        </a>
+                    </li>
+                    {% endfor %}
+
+                    {% if products.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ products.next_page_number }}{% if selected_category %}&category={{ selected_category.id }}{% endif %}{% if product_type %}&type={{ product_type }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">
+                            {% trans "Siguiente" %}
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+
+            {% else %}
+            <div class="text-center py-5">
+                <i class="uil uil-inbox" style="font-size: 5rem; color: #ccc;"></i>
+                <h4 class="mt-3">{% trans "No se encontraron productos" %}</h4>
+                <p class="text-muted">{% trans "Intenta ajustar tus filtros de búsqueda" %}</p>
+                <a href="{% url 'landing:shop_catalog' %}" class="btn" style="background-color: var(--cnvs-themecolor); color: white;">
+                    {% trans "Limpiar filtros" %}
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% load static %}
+{% load i18n %}
+
+<!-- Testimoniales -->
+<section class="py-5" style="background-color: #f8f9fa !important;">
+  <div class="container mt-n3 mt-sm-n2 pb-5 mb-md-2 mb-lg-3 mb-xl-4 mb-xxl-5">
+    <h2 class="h1 text-center pb-3 pb-lg-4">{% trans "Testimonios" %}</h2>
+
+    <!-- Swiper slider -->
+    <div class="swiper pb-1 pb-md-2 pb-lg-3 pb-xl-4" data-swiper-options='{
+        "spaceBetween": 24,
+        "loop": true,
+        "autoHeight": true,
+        "pagination": {
+            "el": ".swiper-pagination",
+            "clickable": true
+        },
+        "breakpoints": {
+            "576": { "slidesPerView": 2 },
+            "992": { "slidesPerView": 3 }
+        }
+    }'>
+        <div class="swiper-wrapper">
+
+            <!-- Testimonio 1 -->
+            <div class="swiper-slide">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <img class="rounded-circle" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1zbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIzMCIgY3k9IjMwIiByPSIzMCIgZmlsbD0iIzY5NzU4YiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk1BPC90ZXh0Pjwvc3ZnPg==" width="60" alt="{% trans "María A." %}">
+                            <div class="ps-3">
+                                <div class="h6 mb-1">María A.</div>
+                                <div class="fs-sm text-body-secondary">{% trans "Fisioterapeuta" %}</div>
+                            </div>
+                        </div>
+                        <p class="card-text">{% trans "El curso de biorresonancia cambió completamente mi práctica. Ahora puedo ofrecer tratamientos más efectivos y mis pacientes han mejorado significativamente." %}</p>
+                    </div>
+                </div>
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <img class="rounded-circle" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1zbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIzMCIgY3k9IjMwIiByPSIzMCIgZmlsbD0iIzY5NzU4YiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkNSPC90ZXh0Pjwvc3ZnPg==" width="60" alt="{% trans "Carlos R." %}">
+                            <div class="ps-3">
+                                <div class="h6 mb-1">Carlos R.</div>
+                                <div class="fs-sm text-body-secondary">{% trans "Médico Integrative" %}</div>
+                            </div>
+                        </div>
+                        <p class="card-text">{% trans "La capacitación en RTMS fue excepcional. Hector tiene un conocimiento profundo y la metodología de enseñanza es muy clara y práctica." %}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- More testimonials can be added here -->
+        </div>
+
+        <!-- Pagination (bullets) -->
+        <div class="swiper-pagination position-relative bottom-0 mt-2 mt-md-3 mt-lg-4 pt-4"></div>
+    </div>
+  </div>
+</section>

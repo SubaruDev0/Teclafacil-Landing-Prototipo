@@ -1,0 +1,493 @@
+{% extends 'frontend/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{{ product.name }} - Hector Academy{% endblock %}
+
+{% block meta_description %}{{ product.short_description }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Page Header */
+    .page-header {
+        background: var(--hector-navy);
+        padding: 40px 0;
+        color: white;
+        margin-bottom: 40px;
+    }
+    .page-header h1,
+    .page-header h2,
+    .page-header h3,
+    .page-header h4,
+    .page-header h5,
+    .page-header h6,
+    .page-header p {
+        color: white !important;
+    }
+
+    /* Breadcrumb Styling dentro del page-header */
+    .page-header .breadcrumb {
+        background: transparent;
+        padding: 0;
+        margin-bottom: 1rem;
+    }
+
+    .page-header .breadcrumb-item + .breadcrumb-item::before {
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .page-header .breadcrumb-item a {
+        color: rgba(255, 255, 255, 0.9);
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .page-header .breadcrumb-item a:hover {
+        color: white;
+    }
+
+    .page-header .breadcrumb-item.active {
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* Product Images */
+    .product-gallery {
+        position: sticky;
+        top: 20px;
+    }
+    .main-product-image {
+        width: 100%;
+        height: 500px;
+        object-fit: contain;
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 20px;
+    }
+    .thumbnail-images {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+        flex-wrap: wrap;
+    }
+    .thumbnail {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border: 2px solid transparent;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: border-color 0.3s;
+    }
+    .thumbnail:hover, .thumbnail.active {
+        border-color: var(--cnvs-themecolor);
+    }
+
+    /* Product Info */
+    .product-price {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--cnvs-themecolor);
+    }
+    .old-price {
+        font-size: 1.5rem;
+        text-decoration: line-through;
+        color: #999;
+        margin-left: 15px;
+    }
+
+    /* Tabs */
+    .nav-tabs .nav-link {
+        color: #666;
+    }
+    .nav-tabs .nav-link.active {
+        color: var(--cnvs-themecolor);
+        border-bottom-color: var(--cnvs-themecolor);
+    }
+
+    /* Related Products */
+    .related-product-card {
+        transition: transform 0.3s ease;
+        border: 1px solid #e5e5e5;
+    }
+    .related-product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    /* Features List */
+    .feature-list {
+        list-style: none;
+        padding: 0;
+    }
+    .feature-list li {
+        padding: 10px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .feature-list li:last-child {
+        border-bottom: none;
+    }
+    .feature-list i {
+        color: var(--cnvs-themecolor);
+        margin-right: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'landing:home' %}">{% trans "Inicio" %}</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'landing:shop_catalog' %}">{% trans "Catálogo" %}</a></li>
+                {% if product.category %}
+                <li class="breadcrumb-item"><a href="{% url 'landing:shop_catalog' %}?category={{ product.category.id }}">{{ product.category.name }}</a></li>
+                {% endif %}
+                <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
+            </ol>
+        </nav>
+
+        <h1 class="h2 mb-2">{{ product.name }}</h1>
+        {% if product.category %}
+        <p class="lead mb-0">
+            <span class="badge bg-light bg-opacity-10 text-white">
+                <i class="uil {% if product.product_type == 'COURSE' %}uil-graduation-cap{% elif product.product_type == 'PHYSICAL' %}uil-medical-square{% else %}uil-file-download{% endif %} me-1"></i>
+                {{ product.category.name }}
+            </span>
+        </p>
+        {% endif %}
+    </div>
+</div>
+
+<section class="py-4">
+    <div class="container">
+        <div class="row">
+            <!-- Product Images -->
+            <div class="col-lg-6">
+                <div class="product-gallery">
+                    {% with primary_image=product.get_primary_image %}
+                    {% if primary_image %}
+                    <img id="mainImage" src="{{ primary_image.image.url }}" alt="{{ product.name }}" class="main-product-image">
+                    {% else %}
+                    <div class="main-product-image d-flex align-items-center justify-content-center">
+                        <i class="uil {% if product.product_type == 'COURSE' %}uil-graduation-cap{% elif product.product_type == 'PHYSICAL' %}uil-medical-square{% else %}uil-file-download{% endif %}" style="font-size: 8rem; color: #ccc;"></i>
+                    </div>
+                    {% endif %}
+                    {% endwith %}
+
+                    <!-- Thumbnails -->
+                    {% if product.images.all %}
+                    <div class="thumbnail-images">
+                        {% for image in product.images.all %}
+                        <img src="{{ image.image.url }}" alt="{{ product.name }}" class="thumbnail {% if image.is_primary %}active{% endif %}" onclick="changeMainImage('{{ image.image.url }}', this)">
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Product Info -->
+            <div class="col-lg-6">
+                {% if product.featured %}
+                <span class="badge mb-2" style="background-color: var(--cnvs-themecolor);">{% trans "Destacado" %}</span>
+                {% endif %}
+
+                <p class="lead text-muted">{{ product.short_description }}</p>
+
+                <div class="mb-4">
+                    <span class="product-price">${{ product.price }}</span>
+                    {% if product.compare_at_price and product.compare_at_price > product.price %}
+                    <span class="old-price">${{ product.compare_at_price }}</span>
+                    <span class="badge bg-danger ms-2">
+                        {% widthratio product.price product.compare_at_price 100 as discount %}
+                        {{ discount|floatformat:0 }}% OFF
+                    </span>
+                    {% endif %}
+                </div>
+
+                <!-- Product Type Badge -->
+                <div class="mb-3">
+                    {% if product.product_type == 'COURSE' %}
+                    <span class="badge bg-primary"><i class="uil uil-graduation-cap"></i> {% trans "Curso" %}</span>
+                    {% elif product.product_type == 'PHYSICAL' %}
+                    <span class="badge bg-success"><i class="uil uil-medical-square"></i> {% trans "Dispositivo Físico" %}</span>
+                    {% else %}
+                    <span class="badge bg-info"><i class="uil uil-file-download"></i> {% trans "Producto Digital" %}</span>
+                    {% endif %}
+
+                    {% if product.stock > 0 %}
+                    <span class="badge bg-success ms-2"><i class="uil uil-check"></i> {% trans "En Stock" %}</span>
+                    {% else %}
+                    <span class="badge bg-danger ms-2"><i class="uil uil-times"></i> {% trans "Sin Stock" %}</span>
+                    {% endif %}
+                </div>
+
+                <!-- Add to Cart Form -->
+                <form method="post" action="{% url 'shop:cart-add' product.id %}" id="addToCartForm" class="mb-4">
+                    {% csrf_token %}
+                    <input type="hidden" name="update" value="false">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-auto">
+                            <label for="quantity" class="form-label">{% trans "Cantidad" %}</label>
+                            <input type="number" class="form-control" id="quantity" name="quantity" value="1" min="1" max="{{ product.stock }}" style="width: 100px;">
+                        </div>
+                        <div class="col">
+                            <button type="submit" class="btn btn-lg" id="addToCartBtn" style="background-color: var(--cnvs-themecolor); color: white;" {% if product.stock == 0 %}disabled{% endif %}>
+                                <i class="uil uil-shopping-cart"></i> {% trans "Agregar al Carrito" %}
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Features -->
+                <ul class="feature-list">
+                    {% if product.product_type == 'COURSE' %}
+                    <li><i class="uil uil-check-circle"></i> {% trans "Certificación Internacional" %}</li>
+                    <li><i class="uil uil-check-circle"></i> {% trans "Acceso de por vida" %}</li>
+                    <li><i class="uil uil-check-circle"></i> {% trans "Material descargable" %}</li>
+                    <li><i class="uil uil-check-circle"></i> {% trans "Soporte continuo" %}</li>
+                    {% elif product.product_type == 'PHYSICAL' %}
+                    <li><i class="uil uil-check-circle"></i> {% trans "Garantía del fabricante" %}</li>
+                    <li><i class="uil uil-check-circle"></i> {% trans "Envío asegurado" %}</li>
+                    <li><i class="uil uil-check-circle"></i> {% trans "Manual de usuario incluido" %}</li>
+                    <li><i class="uil uil-check-circle"></i> {% trans "Soporte técnico" %}</li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+
+        <!-- Product Details Tabs -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-bs-toggle="tab" href="#description">{% trans "Descripción" %}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="tab" href="#specifications">{% trans "Especificaciones" %}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="tab" href="#reviews">{% trans "Reseñas" %} ({{ product.reviews.count }})</a>
+                    </li>
+                </ul>
+
+                <div class="tab-content pt-4">
+                    <!-- Description Tab -->
+                    <div id="description" class="tab-pane active">
+                        <div class="prose">
+                            {{ product.description|safe }}
+                        </div>
+                    </div>
+
+                    <!-- Specifications Tab -->
+                    <div id="specifications" class="tab-pane fade">
+                        <table class="table table-striped">
+                            <tbody>
+                                {% if product.category %}
+                                <tr>
+                                    <td><strong>{% trans "Categoría" %}</strong></td>
+                                    <td>{{ product.category.name }}</td>
+                                </tr>
+                                {% endif %}
+                                <tr>
+                                    <td><strong>{% trans "SKU" %}</strong></td>
+                                    <td>{{ product.sku }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>{% trans "Tipo" %}</strong></td>
+                                    <td>{{ product.get_product_type_display }}</td>
+                                </tr>
+                                {% if product.weight %}
+                                <tr>
+                                    <td><strong>{% trans "Peso" %}</strong></td>
+                                    <td>{{ product.weight }} kg</td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Reviews Tab -->
+                    <div id="reviews" class="tab-pane fade">
+                        {% if product.reviews.all %}
+                        {% for review in product.reviews.all %}
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <h6 class="card-title">{{ review.user.get_full_name }}</h6>
+                                    <small class="text-muted">{{ review.created_at|date:"d/m/Y" }}</small>
+                                </div>
+                                <div class="mb-2">
+                                    {% for i in "12345" %}
+                                    <i class="uil uil-star{% if forloop.counter > review.rating %}-outline{% endif %}" style="color: #ffc107;"></i>
+                                    {% endfor %}
+                                </div>
+                                <p class="card-text">{{ review.comment }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        {% else %}
+                        <p class="text-muted">{% trans "Aún no hay reseñas para este producto." %}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Related Products -->
+        {% if related_products %}
+        <div class="row mt-5">
+            <div class="col-12">
+                <h3 class="mb-4">{% trans "Productos Relacionados" %}</h3>
+            </div>
+            {% for related in related_products %}
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="related-product-card card h-100">
+                    {% with image=related.get_primary_image %}
+                    {% if image %}
+                    <img src="{{ image.image.url }}" class="card-img-top" alt="{{ related.name }}" style="height: 200px; object-fit: contain; padding: 20px;">
+                    {% else %}
+                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <i class="uil uil-image-slash" style="font-size: 4rem; color: #ccc;"></i>
+                    </div>
+                    {% endif %}
+                    {% endwith %}
+
+                    <div class="card-body">
+                        <h6 class="card-title">{{ related.name }}</h6>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <span class="h6 mb-0" style="color: var(--cnvs-themecolor);">${{ related.price }}</span>
+                            <a href="{% url 'landing:product_detail' related.slug %}" class="btn btn-sm btn-outline-primary">
+                                {% trans "Ver" %}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function changeMainImage(imageUrl, thumbnail) {
+    document.getElementById('mainImage').src = imageUrl;
+
+    // Remove active class from all thumbnails
+    document.querySelectorAll('.thumbnail').forEach(thumb => {
+        thumb.classList.remove('active');
+    });
+
+    // Add active class to clicked thumbnail
+    thumbnail.classList.add('active');
+}
+
+// Handle Add to Cart Form Submission
+document.addEventListener('DOMContentLoaded', function() {
+    const addToCartForm = document.getElementById('addToCartForm');
+    const addToCartBtn = document.getElementById('addToCartBtn');
+
+    if (addToCartForm) {
+        addToCartForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Disable button to prevent double submission
+            addToCartBtn.disabled = true;
+            const originalText = addToCartBtn.innerHTML;
+            addToCartBtn.innerHTML = '<i class="uil uil-sync"></i> {% trans "Agregando..." %}';
+
+            // Get form data
+            const formData = new FormData(addToCartForm);
+
+            // Send AJAX request
+            fetch(addToCartForm.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update cart counter in header
+                    const cartCounter = document.querySelector('.top-cart-number');
+                    if (cartCounter) {
+                        cartCounter.textContent = data.cart_count;
+                    }
+
+                    // Show success message with SweetAlert2
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'success',
+                            title: '{% trans "¡Producto agregado!" %}',
+                            text: data.message,
+                            showCancelButton: true,
+                            confirmButtonText: '{% trans "Ir al Carrito" %}',
+                            cancelButtonText: '{% trans "Seguir Comprando" %}',
+                            confirmButtonColor: '#1B9CD9',
+                            cancelButtonColor: '#6c757d'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = data.checkout_url;
+                            }
+                        });
+                    } else {
+                        // Fallback to native alert
+                        alert(data.message);
+                        if (confirm('{% trans "¿Deseas ir al carrito?" %}')) {
+                            window.location.href = data.checkout_url;
+                        }
+                    }
+
+                    // Re-enable button
+                    addToCartBtn.disabled = false;
+                    addToCartBtn.innerHTML = originalText;
+                } else {
+                    // Show error message
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: '{% trans "Error" %}',
+                            text: data.message,
+                            confirmButtonColor: '#1B9CD9'
+                        });
+                    } else {
+                        alert(data.message);
+                    }
+
+                    // Re-enable button
+                    addToCartBtn.disabled = false;
+                    addToCartBtn.innerHTML = originalText;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+
+                // Show error message
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: '{% trans "Error" %}',
+                        text: '{% trans "Hubo un error al agregar el producto. Por favor intenta de nuevo." %}',
+                        confirmButtonColor: '#1B9CD9'
+                    });
+                } else {
+                    alert('{% trans "Hubo un error al agregar el producto. Por favor intenta de nuevo." %}');
+                }
+
+                // Re-enable button
+                addToCartBtn.disabled = false;
+                addToCartBtn.innerHTML = originalText;
+            });
+        });
+    }
+});
+</script>
+{% endblock %}

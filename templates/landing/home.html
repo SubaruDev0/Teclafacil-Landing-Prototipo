@@ -1,0 +1,49 @@
+{% extends 'landing/base.html' %}
+{% load static %}
+
+{% block content %}
+<section class="hero">
+  <div class="container">
+    <div class="row align-items-center" style="gap:4rem;">
+      <div class="col-6">
+        <h1 class="hero-title">TeclaFácil</h1>
+        <p class="hero-lead">El teclado ergonómico diseñado para programadores senior. Reduce dolor, aumenta productividad y prolonga carreras.</p>
+        <div class="mt-4" style="display:flex;gap:1.5rem;flex-wrap:wrap;">
+          {% if cta_email %}
+            <a class="btn btn-primary btn-lg" href="{% url 'landing:reservar' %}?email={{ cta_email|urlencode }}&tipo=kit">Reservar Kit Profesional</a>
+          {% else %}
+            <a class="btn btn-primary btn-lg" href="{% url 'landing:reservar' %}?tipo=kit">Reservar Kit Profesional</a>
+          {% endif %}
+          <a class="btn btn-outline-secondary btn-lg" href="#contacto">Contacto</a>
+        </div>
+      </div>
+      <div class="col-5">
+        <div class="device-frame">
+          <img src="{% static 'landing/personausdando.png' %}" alt="Usuario usando TeclaFácil" class="device-image">
+          <div class="device-glow"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% include 'snippets/home/stats_section.html' %}
+
+<section class="demo video">
+  <div class="container">
+    <h3>Demostración del prototipo</h3>
+    <div class="video-wrapper">
+      <div class="responsive-video">
+        <!-- Embed del YouTube Short -->
+        <iframe src="https://www.youtube.com/embed/quD3KxTH5vA" title="TeclaFácil demo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+      </div>
+    </div>
+    <p class="video-caption">Un vistazo rápido a TeclaFácil — diseño pensado para largas jornadas de programación sin dolor.</p>
+  </div>
+</section>
+
+{% include 'snippets/home/testimonials_section.html' %}
+
+{% include 'snippets/home/cta_section.html' %}
+
+{% endblock %}

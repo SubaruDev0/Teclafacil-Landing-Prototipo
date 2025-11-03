@@ -1,0 +1,66 @@
+{% extends 'landing/base.html' %}
+{% block content %}
+<div class="container" style="padding:4rem 5rem;">
+  <div class="row justify-content-center">
+    <div class="col-10">
+      <div class="card">
+        <h2 class="mb-4">Soluciones para empresas</h2>
+        <p class="lead">Ofrecemos programas piloto para empresas tecnológicas que quieran cuidar la salud de su talento senior y mejorar el bienestar de sus equipos.</p>
+
+        <div class="row mt-5" style="gap:2rem;">
+          <div class="col-6">
+            <div style="background:rgba(27,156,217,0.08);padding:2.5rem;border-radius:16px;border:1px solid rgba(27,156,217,0.3);">
+              <h3 style="color:var(--accent-2);margin-bottom:2rem;font-size:2rem;">¿Qué incluye?</h3>
+              <ul style="list-style:none;padding:0;margin:0;">
+                <li style="padding:0.8rem 0;font-size:1.2rem;border-bottom:1px solid rgba(255,255,255,0.1);">
+                  <strong style="color:var(--accent);">✓</strong> Kit completo por empleado (teclado + mouse + audífonos)
+                </li>
+                <li style="padding:0.8rem 0;font-size:1.2rem;border-bottom:1px solid rgba(255,255,255,0.1);">
+                  <strong style="color:var(--accent);">✓</strong> Soporte técnico dedicado
+                </li>
+                <li style="padding:0.8rem 0;font-size:1.2rem;border-bottom:1px solid rgba(255,255,255,0.1);">
+                  <strong style="color:var(--accent);">✓</strong> Onboarding personalizado para tu equipo
+                </li>
+                <li style="padding:0.8rem 0;font-size:1.2rem;border-bottom:1px solid rgba(255,255,255,0.1);">
+                  <strong style="color:var(--accent);">✓</strong> Métricas de bienestar y productividad
+                </li>
+                <li style="padding:0.8rem 0;font-size:1.2rem;">
+                  <strong style="color:var(--accent);">✓</strong> Programa piloto con seguimiento mensual
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="col-5">
+            <div style="background:linear-gradient(135deg, rgba(27,156,217,0.15), rgba(11,99,163,0.1));padding:2.5rem;border-radius:16px;border:2px solid var(--accent);text-align:center;">
+              <h3 style="color:var(--text-light);margin-bottom:1rem;font-size:1.8rem;">Precio por unidad</h3>
+              <div style="font-size:4rem;color:var(--accent-2);font-weight:800;margin:2rem 0;">CLP $200.000</div>
+              <p style="color:var(--muted);font-size:1.1rem;margin-bottom:2rem;">Inversión por empleado en el programa piloto</p>
+              <a class="btn btn-primary btn-lg w-100" href="{% url 'landing:reservar' %}?tipo=pilot">Solicitar piloto empresarial</a>
+              <p style="margin-top:1.5rem;font-size:0.95rem;color:var(--muted);">Sin depósito requerido · Facturación mensual disponible</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-5" style="background:rgba(20,25,46,0.5);padding:2.5rem;border-radius:16px;border:1px solid rgba(27,156,217,0.2);">
+          <h3 style="color:var(--accent);margin-bottom:1.5rem;font-size:2rem;">¿Por qué invertir en ergonomía?</h3>
+          <div class="row">
+            <div class="col-4 text-center">
+              <div style="font-size:3rem;color:var(--accent-2);font-weight:700;margin-bottom:1rem;">↓ 40%</div>
+              <p style="color:var(--muted);font-size:1.1rem;">Reducción en ausentismo por dolor</p>
+            </div>
+            <div class="col-4 text-center">
+              <div style="font-size:3rem;color:var(--accent-2);font-weight:700;margin-bottom:1rem;">↑ 25%</div>
+              <p style="color:var(--muted);font-size:1.1rem;">Aumento en productividad</p>
+            </div>
+            <div class="col-4 text-center">
+              <div style="font-size:3rem;color:var(--accent-2);font-weight:700;margin-bottom:1rem;">↑ 60%</div>
+              <p style="color:var(--muted);font-size:1.1rem;">Mejora en satisfacción laboral</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,535 @@
+:root{
+  --bg-dark:#0a0e27; /* deep navy */
+  --panel:#14192e; /* card background */
+  --muted:#b0c4de;
+  --accent:#1b9cd9; /* celeste/azul del logo */
+  --accent-2:#ffd166; /* amarillo del logo */
+  --brand-blue:#0b63a3;
+  --card-shadow:0 24px 60px rgba(2,8,23,0.7);
+  --text-light:#ffffff;
+}
+
+/* Global: aumentar base para personas mayores (desktop-only) */
+body{
+  background:linear-gradient(180deg, #0a0e27, #050815);
+  color:var(--text-light);
+  font-size:22px;
+  line-height:1.6;
+  margin:0;
+  padding:0;
+}
+.container{width:100%;max-width:1600px;padding:2.5rem 5rem;margin:0 auto}
+
+/* Titulares y hero más grandes */
+.section-title{
+  text-shadow:0 2px 12px rgba(0,0,0,0.8);
+  font-size:3.5rem;
+  font-weight:700;
+  color:var(--text-light);
+  margin-bottom:2rem;
+}
+.hero-title{font-size:4.2rem;font-weight:800;color:var(--text-light);line-height:1.2}
+.hero-lead{font-size:1.65rem;color:rgba(255,255,255,0.9);line-height:1.7;margin:1.5rem 0}
+
+/* Header: mayor altura y links más grandes */
+.site-header{
+  padding:2rem 0;
+  background:rgba(10,14,39,0.95);
+  border-bottom:1px solid rgba(27,156,217,0.2);
+  position:sticky;
+  top:0;
+  z-index:1000;
+  backdrop-filter:blur(10px);
+}
+.site-header-inner{
+  max-width:1600px;
+  margin:0 auto;
+  padding:0 5rem;
+}
+.brand-logo{height:70px;width:auto;max-width:180px;object-fit:contain}
+.brand-text{
+  color:var(--accent) !important;
+  font-size:1.8rem;
+  font-weight:700;
+}
+.nav-link-site{
+  font-size:1.2rem;
+  padding:0.7rem 1.2rem;
+  color:var(--text-light) !important;
+  transition:color 0.3s ease;
+}
+.nav-link-site:hover{color:var(--accent) !important}
+
+/* Botones más grandes y con mayor hit area */
+.btn-primary{
+  background:linear-gradient(135deg,var(--accent),var(--brand-blue));
+  border:none;
+  color:var(--text-light);
+  font-size:1.25rem;
+  padding:1.2rem 2rem;
+  border-radius:12px;
+  font-weight:600;
+  transition:all 0.3s ease;
+  box-shadow:0 8px 20px rgba(27,156,217,0.3);
+}
+.btn-primary:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 28px rgba(27,156,217,0.4);
+}
+.btn-primary.btn-lg{font-size:1.4rem;padding:1.4rem 2.5rem}
+.btn-outline-secondary{
+  font-size:1.1rem;
+  padding:0.9rem 1.5rem;
+  color:var(--text-light);
+  border:2px solid rgba(255,255,255,0.3);
+  background:transparent;
+}
+.btn-outline-secondary:hover{
+  background:rgba(255,255,255,0.1);
+  border-color:var(--accent);
+}
+.btn-warning{
+  background:var(--accent-2);
+  color:#0a0e27;
+  font-weight:700;
+  border:none;
+}
+.btn-secondary{
+  background:linear-gradient(135deg, rgba(27,156,217,0.3), rgba(11,99,163,0.3));
+  border:1px solid var(--accent);
+  color:var(--text-light);
+}
+
+/* Stat cards más grandes */
+.stat-card{
+  padding:2.5rem 2rem;
+  min-width:240px;
+  background:linear-gradient(135deg, rgba(27,156,217,0.15), rgba(11,99,163,0.1));
+  border-radius:16px;
+  border:1px solid rgba(27,156,217,0.3);
+  transition:transform 0.3s ease;
+}
+.stat-card:hover{transform:translateY(-4px)}
+.stat-value{font-size:3.5rem;color:var(--accent-2);font-weight:800;text-shadow:0 2px 10px rgba(255,209,102,0.5)}
+.stat-label{color:var(--text-light);font-size:1.3rem;font-weight:500;margin-top:0.5rem}
+
+/* Video más grande y centrado */
+.demo.video{
+  padding:5rem 0;
+  text-align:center;
+}
+.demo.video h3{
+  font-size:3rem;
+  color:var(--text-light);
+  margin-bottom:2.5rem;
+  font-weight:700;
+}
+.video-wrapper{
+  max-width:1200px;
+  margin:0 auto;
+}
+.responsive-video{
+  position:relative;
+  padding-bottom:56.25%;
+  height:0;
+  overflow:hidden;
+  border-radius:20px;
+  box-shadow:0 30px 80px rgba(27,156,217,0.3);
+  border:2px solid rgba(27,156,217,0.3);
+}
+.responsive-video iframe{position:absolute;top:0;left:0;width:100%;height:100%}
+.video-caption{
+  font-size:1.2rem;
+  color:var(--muted);
+  margin-top:1.5rem;
+}
+
+/* Device mockup más grande */
+.device-frame{
+  width:100%;
+  height:auto;
+  aspect-ratio:4/3;
+  max-width:600px;
+  border-radius:24px;
+  position:relative;
+  overflow:hidden;
+  box-shadow:0 40px 100px rgba(27,156,217,0.4);
+  border:3px solid rgba(27,156,217,0.3);
+  background:linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02));
+}
+.device-image{width:100%;height:100%;object-fit:cover;border-radius:20px}
+.device-glow{
+  position:absolute;
+  inset:-50%;
+  background:radial-gradient(circle, rgba(27,156,217,0.3), transparent 70%);
+  animation:glow 3s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes glow{
+  0%, 100%{opacity:0.5}
+  50%{opacity:0.8}
+}
+
+/* Testimonios: texto más grande, quote oculto ya, meta más visible */
+.testimonials-section{
+  padding:6rem 0;
+  background:rgba(20,25,46,0.5);
+}
+.testimonials-section .section-sub{
+  font-size:1.3rem;
+  color:var(--muted);
+  text-align:center;
+  margin-bottom:3rem;
+}
+.testimonial-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(350px, 1fr));
+  gap:2rem;
+  margin-top:3rem;
+}
+.testimonial-card{
+  background:linear-gradient(135deg, rgba(27,156,217,0.08), rgba(11,99,163,0.05));
+  border-radius:16px;
+  padding:2rem;
+  border:1px solid rgba(27,156,217,0.2);
+  display:flex;
+  gap:1.5rem;
+  align-items:start;
+  transition:transform 0.3s ease, box-shadow 0.3s ease;
+}
+.testimonial-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 12px 30px rgba(27,156,217,0.2);
+}
+.testimonial-card .avatar{
+  background:linear-gradient(135deg, var(--accent), var(--brand-blue));
+  color:var(--text-light);
+  width:60px;
+  height:60px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1.3rem;
+  font-weight:700;
+  flex-shrink:0;
+}
+.testimonial-body{flex:1}
+.testimonial-body blockquote{
+  font-size:1.2rem;
+  line-height:1.7;
+  color:var(--text-light);
+  margin:0 0 1rem 0;
+  font-style:italic;
+}
+.testimonial-card .meta{
+  color:var(--muted);
+  font-size:1.05rem;
+}
+.testimonial-card .meta .author{
+  color:var(--accent);
+  font-weight:600;
+}
+
+/* Formularios (inputs y selects) ligeramente más grandes */
+.form-control, .form-select, textarea{
+  font-size:1.2rem;
+  padding:1rem 1.2rem;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(27,156,217,0.3);
+  color:var(--text-light);
+  border-radius:8px;
+}
+.form-control:focus, .form-select:focus, textarea:focus{
+  background:rgba(255,255,255,0.08);
+  border-color:var(--accent);
+  color:var(--text-light);
+  box-shadow:0 0 0 3px rgba(27,156,217,0.2);
+}
+.form-control::placeholder{color:rgba(255,255,255,0.4)}
+.form-label{
+  font-size:1.15rem;
+  color:var(--text-light);
+  font-weight:600;
+  margin-bottom:0.7rem;
+}
+.form-select{
+  background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+}
+.form-select option{background:#14192e;color:var(--text-light)}
+
+/* CTA area (email) ajustar tamaño */
+#cta-email{font-size:1.2rem;padding:1rem 1.2rem}
+#cta-reserve{font-size:1.2rem;padding:1rem 1.5rem}
+
+/* chosen-info (has elegido) destacar: blanco y un poco más grande */
+#chosen-info{
+  font-size:1.25rem;
+  background:linear-gradient(135deg, rgba(27,156,217,0.15), rgba(11,99,163,0.1)) !important;
+  border:1px solid rgba(27,156,217,0.3) !important;
+  color:var(--text-light) !important;
+  padding:1.5rem;
+}
+#chosen-info strong{font-weight:700;color:var(--accent-2)}
+
+/* Mayor espaciado en secciones */
+.hero{
+  padding:6rem 0;
+  min-height:70vh;
+  display:flex;
+  align-items:center;
+}
+.hero .row{
+  width:100%;
+  display:flex;
+  align-items:center;
+  gap:4rem;
+}
+
+/* Stats section */
+.stats-section{
+  padding:5rem 0;
+  background:rgba(20,25,46,0.3);
+}
+.stats-grid{
+  display:flex;
+  justify-content:center;
+  gap:3rem;
+  flex-wrap:wrap;
+}
+
+/* CTA section mejorado */
+.cta-section, #contacto{
+  padding:6rem 0;
+  background:linear-gradient(135deg, rgba(27,156,217,0.1), rgba(255,209,102,0.05));
+  border-top:1px solid rgba(27,156,217,0.2);
+  border-bottom:1px solid rgba(27,156,217,0.2);
+}
+.cta-section h2, #contacto h2{
+  color:var(--text-light);
+  font-size:3.2rem;
+  font-weight:700;
+  margin-bottom:1.5rem;
+}
+.cta-section .lead, #contacto .lead{
+  font-size:1.4rem;
+  color:var(--muted);
+  margin-bottom:2rem;
+}
+.cta-section ul, #contacto ul{
+  font-size:1.2rem;
+  color:var(--text-light);
+}
+.cta-section ul li, #contacto ul li{
+  margin-bottom:0.8rem;
+}
+.input-group{display:flex;gap:1rem;margin-top:1rem}
+.input-group .form-control{flex:1}
+
+/* footer adjustments */
+.site-footer{
+  background:rgba(10,14,39,0.8);
+  color:var(--muted);
+  border-top:1px solid rgba(27,156,217,0.2);
+  padding:3rem 0;
+}
+.site-footer-inner{
+  max-width:1600px;
+  margin:0 auto;
+  padding:0 5rem;
+}
+.site-footer p{font-size:1.1rem;margin:0.5rem 0}
+.site-footer a{
+  font-size:1.1rem;
+  color:var(--muted);
+  transition:color 0.3s ease;
+}
+.site-footer a:hover{color:var(--accent)}
+.heart{color:#ff6b6b;animation:heartbeat 1.5s ease-in-out infinite}
+@keyframes heartbeat{
+  0%, 100%{transform:scale(1)}
+  50%{transform:scale(1.1)}
+}
+
+/* Accessibility focus */
+:focus{outline:3px solid rgba(27,156,217,0.3);outline-offset:3px}
+
+/* Cards */
+.card{
+  background:linear-gradient(135deg, rgba(27,156,217,0.08), rgba(11,99,163,0.05));
+  border-radius:20px;
+  padding:3rem;
+  border:1px solid rgba(27,156,217,0.3);
+  color:var(--text-light);
+  box-shadow:0 20px 50px rgba(2,8,23,0.7);
+}
+.card h2{
+  font-size:3rem;
+  color:var(--text-light);
+  margin-bottom:1.5rem;
+  font-weight:700;
+}
+.card .lead{
+  font-size:1.4rem;
+  color:var(--muted);
+  margin-bottom:2rem;
+}
+
+/* Card glass */
+.card-glass{
+  background:linear-gradient(135deg, rgba(27,156,217,0.1), rgba(11,99,163,0.08));
+  border-radius:24px;
+  padding:3rem;
+  border:1px solid rgba(27,156,217,0.3);
+  box-shadow:0 20px 50px rgba(2,8,23,0.7);
+  backdrop-filter:blur(10px);
+}
+
+/* Feedback section */
+.feedback-section{
+  margin-top:4rem;
+  padding:3rem;
+  background:rgba(20,25,46,0.5);
+  border-radius:16px;
+  border:1px solid rgba(27,156,217,0.2);
+}
+.feedback-section h3{
+  font-size:2.2rem;
+  color:var(--text-light);
+  margin-bottom:1.5rem;
+  font-weight:700;
+}
+
+/* Alert styles */
+.alert{
+  border-radius:12px;
+  padding:1.5rem;
+  font-size:1.2rem;
+}
+.alert-info{
+  background:linear-gradient(135deg, rgba(27,156,217,0.15), rgba(11,99,163,0.1));
+  color:var(--text-light);
+  border:1px solid rgba(27,156,217,0.3);
+}
+
+/* Reservar page specific */
+.reservar-submit{
+  font-size:1.3rem;
+  padding:1.2rem 2rem;
+  white-space:nowrap;
+}
+#deposit-amount{
+  color:var(--accent-2);
+  font-size:2rem;
+  font-weight:700;
+}
+
+/* Layout improvements */
+.site-main{
+  min-height:calc(100vh - 200px);
+}
+
+/* Row adjustments for horizontal layout */
+.row{
+  margin-left:0;
+  margin-right:0;
+}
+.row > *{
+  padding-left:0;
+  padding-right:0;
+}
+
+/* Smooth transitions */
+a, button, .card, .testimonial-card{
+  transition:all 0.3s ease;
+}
+
+/* Better scrolling */
+html{
+  scroll-behavior:smooth;
+}
+
+/* Text selection */
+::selection{
+  background:var(--accent);
+  color:white;
+}
+
+/* Loading state */
+button:disabled{
+  opacity:0.6;
+  cursor:not-allowed;
+}
+
+/* Print friendly */
+@media print{
+  .site-header, .site-footer{display:none}
+}
+
+/* Inputs dark */
+.form-control, .form-select, textarea { background: rgba(255,255,255,0.03) !important; border:1px solid rgba(255,255,255,0.04) !important; color: #e6eef6 !important }
+.form-control::placeholder { color: rgba(255,255,255,0.35) }
+
+/* Smaller avatar text */
+.avatar{font-size:0.95rem}
+
+/* header link style for dark */
+.nav-link-site{color:rgba(255,255,255,0.9);opacity:0.9}
+.nav-link-site:hover{opacity:1}
+
+/* ensure hero doesn't get bootstrap white background */
+.hero .card{background:transparent;border:none;box-shadow:none}
+
+/* Extra defensive rules */
+.testimonials-section svg, .testimonial-card svg, .testimonial-card img { display: none !important }
+.testimonials-section .testimonial-card { overflow: hidden }
+.testimonial-body blockquote { max-height: 6.5rem; overflow: hidden; }
+
+/* Force dark background for all bootstrap card variants */
+.card, .card-body, .card > .card-body { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)) !important; color: #e6eef6 !important }
+
+/* Header link final color */
+.nav-link-site, .site-header nav a { color: #cfe9ff !important; opacity: 1 !important }
+
+/* Make submit button text area selectable and visible */
+.reservar-submit { padding-left:1rem;padding-right:1rem;font-weight:700 }
+
+/* Larger video */
+.responsive-video{padding-bottom:45%;height:0}
+
+/* Form select dark and readable */
+.form-select{background:rgba(255,255,255,0.03)!important;color:#e6eef6!important;border:1px solid rgba(255,255,255,0.05)!important}
+
+/* Ensure specific chosen-info elements are highly readable */
+#chosen-info, #chosen-info * { color: #ffffff !important }
+
+/* Full width adjustments */
+.site-main{width:100%;padding:0;margin:0}
+
+/* Hacer que las secciones usen todo el ancho: quitar centrado y usar paddings horizontales grandes */
+section{width:100%;padding-left:2.5rem;padding-right:2.5rem}
+
+/* Ajuste especial para hero: usar grid con dos columnas amplias */
+.hero .row{display:flex;align-items:center;gap:3rem}
+.hero .col-7{flex:0 0 60%}
+.hero .col-5{flex:0 0 40%}
+
+/* Asegurar que stats_section ocupa ancho completo */
+.stats-section .container{width:100%;padding:1.5rem 4rem}
+
+.site-header-inner, .site-footer-inner{width:100%;padding-left:4rem;padding-right:4rem;max-width:100%;margin:0 auto}
+.site-header-inner a.brand-text, .site-header-inner .brand-text{color:#bfe8ff}
+
+.site-main section{max-width:100%;}
+
+/* Reset básico para ocupar 100% del viewport */
+html,body{width:100%;height:100%;margin:0;padding:0}
+
+.site-header-inner{display:flex;align-items:center;justify-content:space-between}
+
+/* Forzar anchos de columnas del hero (bootstrap puede interferir) */
+.hero .col-7{flex-basis:60% !important;max-width:60% !important}
+.hero .col-5{flex-basis:40% !important;max-width:40% !important}
+
+/* Stats grid: ocupar todo el ancho y distribuir */
+.stats-grid{display:flex;gap:2rem;justify-content:space-around;align-items:center;width:100%}

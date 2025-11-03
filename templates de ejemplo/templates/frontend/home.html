@@ -1,0 +1,339 @@
+{% extends 'frontend/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Hector Academy - Cursos y Terapias Complementarias" %}{% endblock %}
+
+{% block meta_description %}{% trans "Cursos especializados en RTMS, biorresonancia, ondas milimétricas y terapias complementarias. Certificación internacional y dispositivos disponibles." %}{% endblock %}
+
+{% block inline_styles %}
+    /* Hero Section */
+    .hero-section {
+        background: var(--hector-navy);
+        padding: 100px 0;
+        color: white;
+    }
+
+    /* Card hover effects */
+    .product-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 1px solid #e5e5e5;
+    }
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
+    /* Stats Section */
+    .stats-section {
+        background: #ffffff;
+    }
+    .stat-item {
+        text-align: center;
+    }
+    .stat-number {
+        font-size: 3rem;
+        font-weight: 700;
+        color: var(--cnvs-themecolor);
+    }
+
+    /* Section Styling */
+    .section-title {
+        margin-bottom: 50px;
+    }
+    .section-title h2 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+    .section-title p {
+        font-size: 1.1rem;
+        color: #666;
+    }
+
+    /* Corporate Section - Responsive Image */
+    .corporate-image {
+        background: url('{% static 'front/img/landing/hector02.webp' %}') no-repeat top center / cover;
+        min-height: 300px;
+    }
+
+    @media (min-width: 768px) {
+        .corporate-image {
+            min-height: 450px;
+        }
+    }
+
+    @media (min-width: 992px) {
+        .corporate-image {
+            min-height: 550px;
+        }
+    }
+
+    /* Responsive Typography for Corporate Section */
+    @media (min-width: 768px) {
+        .col-lg-6.order-1.order-lg-2 h2 {
+            font-size: 2.5rem !important;
+        }
+        .col-lg-6.order-1.order-lg-2 p:nth-of-type(2) {
+            font-size: 1.125rem !important;
+        }
+    }
+
+    /* Feature boxes spacing for mobile */
+    @media (max-width: 767px) {
+        .feature-box {
+            text-align: center;
+        }
+        .feature-box .fbox-icon {
+            margin-left: auto;
+            margin-right: auto;
+        }
+    }
+{% endblock inline_styles %}
+
+{% block content %}
+<div class="content-wrap py-0">
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 text-center text-lg-start px-4 px-lg-3">
+                <h1 class="display-4 fw-bold mb-4 text-white">{% trans "Capacitación en Terapias Complementarias" %}</h1>
+                <p class="lead mb-4 text-white">{% trans "Cursos especializados en RTMS, biorresonancia, ondas milimétricas y dispositivos de terapia. Formación profesional con certificación internacional." %}</p>
+                <div class="d-flex gap-3 justify-content-center justify-content-lg-start flex-wrap">
+                    <a href="{% url 'landing:shop_catalog' %}?type=COURSE" class="btn btn-light btn-lg">
+                        <i class="uil uil-graduation-cap"></i> {% trans "Ver Cursos" %}
+                    </a>
+                    <a href="{% url 'landing:shop_catalog' %}?type=PHYSICAL" class="btn btn-outline-light btn-lg">
+                        <i class="uil uil-medical-square"></i> {% trans "Dispositivos" %}
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center mt-5 mt-lg-0">
+                <img src="{% static 'front/img/landing/hector01.webp' %}" alt="Hector Academy" class="img-fluid" style="max-height: 400px;">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section py-5">
+    <div class="container">
+        <!-- Título de la sección -->
+        <div class="section-title text-center">
+            <h2>{% trans "Nuestro Impacto en Números" %}</h2>
+            <p>{% trans "Transformando la práctica de terapias complementarias en todo el mundo" %}</p>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3 col-6 mb-4 mb-md-0">
+                <div class="stat-item">
+                    <div class="stat-number">500+</div>
+                    <h5>{% trans "Profesionales Capacitados" %}</h5>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-4 mb-md-0">
+                <div class="stat-item">
+                    <div class="stat-number">10+</div>
+                    <h5>{% trans "Cursos Especializados" %}</h5>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-item">
+                    <div class="stat-number">15+</div>
+                    <h5>{% trans "Años de Experiencia" %}</h5>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-item">
+                    <div class="stat-number">20</div>
+                    <h5>{% trans "Idiomas Disponibles" %}</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Corporate Section - Hector Arias -->
+<section id="content" style="background-color: var(--hector-light-gray);">
+    <div class="content-wrap py-5">
+        <div class="container">
+            <div class="block-hero-25">
+                <div class="row align-items-lg-center gutter-50">
+                    <!-- Imagen Izquierda -->
+                    <div class="col-lg-6 order-2 order-lg-1 mt-4 mt-lg-0">
+                        <div class="position-relative d-flex flex-column justify-content-center align-items-center mb-2 rounded-5 overflow-hidden shadow corporate-image">
+                        </div>
+                    </div>
+
+                    <!-- Contenido Derecha -->
+                    <div class="col-lg-6 align-self-center order-1 order-lg-2 px-4 px-md-3 text-center text-lg-start">
+                        <h2 class="fw-semibold lh-base mb-3 mb-md-3" style="color: var(--hector-navy); font-size: 1.75rem;">Hector Arias Orellana</h2>
+                        <p class="text-muted mb-3 mb-md-4 fw-normal" style="font-size: 1rem;">
+                            <i class="bi-award me-2" style="color: var(--hector-cyan);"></i>
+                            Psicólogo - Especialista en Neuropsicología
+                        </p>
+
+                        <p class="mb-4 mb-md-5" style="color: var(--hector-dark-gray); font-size: 1rem; line-height: 1.6;">
+                            {% trans "Mi misión es democratizar el acceso a terapias complementarias efectivas mediante dispositivos para el hogar y capacitación profesional. La experiencia como andinista me enseñó que los desafíos más grandes requieren preparación, perseverancia y las herramientas adecuadas." %}
+                        </p>
+
+                        <!-- Proceso de trabajo -->
+                        <div class="row col-mb-50 justify-content-center">
+                            <div class="col-md-4 mb-4 mb-md-0">
+                                <div class="feature-box fbox-plain fbox-sm flex-column">
+                                    <div class="fbox-icon mb-3">
+                                        <i class="bi-person-check" style="font-size: 2.5rem; color: var(--hector-cyan);"></i>
+                                    </div>
+                                    <div class="fbox-content">
+                                        <h3 class="text-transform-none ls-0 mb-3 h5" style="color: var(--hector-navy);">{% trans "Evaluación personalizada" %}</h3>
+                                        <p class="mb-0">{% trans "Análisis integral de las necesidades específicas del paciente para recomendar la terapia más adecuada." %}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 mb-4 mb-md-0">
+                                <div class="feature-box fbox-plain fbox-sm flex-column">
+                                    <div class="fbox-icon mb-3">
+                                        <i class="bi-display" style="font-size: 2.5rem; color: var(--hector-cyan);"></i>
+                                    </div>
+                                    <div class="fbox-content">
+                                        <h3 class="text-transform-none ls-0 mb-3 h5" style="color: var(--hector-navy);">{% trans "Selección del dispositivo" %}</h3>
+                                        <p class="mb-0">{% trans "Recomendación del equipo terapéutico más apropiado basado en evidencia científica y experiencia clínica." %}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="feature-box fbox-plain fbox-sm flex-column">
+                                    <div class="fbox-icon mb-3">
+                                        <i class="bi-mortarboard" style="font-size: 2.5rem; color: var(--hector-cyan);"></i>
+                                    </div>
+                                    <div class="fbox-content">
+                                        <h3 class="text-transform-none ls-0 mb-3 h5" style="color: var(--hector-navy);">{% trans "Capacitación especializada" %}</h3>
+                                        <p class="mb-0">{% trans "Formación completa en el uso del dispositivo con certificación y soporte técnico continuo." %}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Courses Section -->
+{% if featured_courses %}
+<section id="courses" class="py-5">
+    <div class="container">
+        <div class="section-title text-center">
+            <h2>{% trans "Cursos Destacados" %}</h2>
+            <p>{% trans "Formación profesional con certificación internacional" %}</p>
+        </div>
+
+        <div class="row">
+            {% for course in featured_courses %}
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="product-card card h-100">
+                    {% with image=course.get_primary_image %}
+                    {% if image %}
+                    <img src="{{ image.image.url }}" class="card-img-top" alt="{{ course.name }}" style="height: 200px; object-fit: cover;">
+                    {% else %}
+                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <i class="uil uil-graduation-cap" style="font-size: 4rem; color: #ccc;"></i>
+                    </div>
+                    {% endif %}
+                    {% endwith %}
+
+                    <div class="card-body">
+                        <h5 class="card-title">{{ course.name }}</h5>
+                        <p class="card-text text-muted small">{{ course.short_description|truncatewords:15 }}</p>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <span class="h5 mb-0" style="color: var(--cnvs-themecolor);">${{ course.price }}</span>
+                            <a href="{% url 'landing:product_detail' course.slug %}" class="btn btn-sm" style="background-color: var(--cnvs-themecolor); color: white;">
+                                {% trans "Ver más" %}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="{% url 'landing:shop_catalog' %}?type=COURSE" class="btn btn-lg" style="background-color: var(--cnvs-themecolor); color: white;">
+                {% trans "Ver todos los cursos" %}
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Featured Devices Section -->
+{% if featured_devices %}
+<section id="devices" class="py-5 bg-light">
+    <div class="container">
+        <div class="section-title text-center">
+            <h2>{% trans "Dispositivos Médicos" %}</h2>
+            <p>{% trans "Equipamiento profesional certificado para terapeutas" %}</p>
+        </div>
+
+        <div class="row">
+            {% for device in featured_devices %}
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="product-card card h-100">
+                    {% with image=device.get_primary_image %}
+                    {% if image %}
+                    <img src="{{ image.image.url }}" class="card-img-top" alt="{{ device.name }}" style="height: 200px; object-fit: contain; padding: 20px;">
+                    {% else %}
+                    <div class="card-img-top bg-white d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <i class="uil uil-medical-square" style="font-size: 4rem; color: #ccc;"></i>
+                    </div>
+                    {% endif %}
+                    {% endwith %}
+
+                    <div class="card-body">
+                        <h5 class="card-title">{{ device.name }}</h5>
+                        <p class="card-text text-muted small">{{ device.short_description|truncatewords:15 }}</p>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <span class="h5 mb-0" style="color: var(--cnvs-themecolor);">${{ device.price }}</span>
+                            <a href="{% url 'landing:product_detail' device.slug %}" class="btn btn-sm" style="background-color: var(--cnvs-themecolor); color: white;">
+                                {% trans "Ver más" %}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="{% url 'landing:shop_catalog' %}?type=PHYSICAL" class="btn btn-lg" style="background-color: var(--cnvs-themecolor); color: white;">
+                {% trans "Ver todos los dispositivos" %}
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- CTA Section -->
+<section class="py-5" style="background-color: var(--cnvs-themecolor);">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8 text-center text-lg-start px-4 px-lg-3 mb-4 mb-lg-0">
+                <h2 class="text-white mb-3">{% trans "¿Listo para especializarte en terapias complementarias?" %}</h2>
+                <p class="text-white-50 mb-0">{% trans "Únete a más de 500 profesionales certificados. Cursos especializados con certificación internacional y dispositivos disponibles para graduados." %}</p>
+            </div>
+            <div class="col-lg-4 text-center text-lg-end">
+                <a href="{% url 'landing:shop_catalog' %}" class="btn btn-light btn-lg">
+                    {% trans "Explorar Catálogo" %}
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+</div><!-- .content-wrap end -->
+{% endblock content %}

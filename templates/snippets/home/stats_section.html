@@ -1,0 +1,22 @@
+{% load static %}
+{% load i18n %}
+
+<section class="stats-section">
+  <div class="container text-center">
+    <h2 class="section-title">Nuestro impacto</h2>
+    <div class="stats-grid">
+      <div class="stat-card text-center">
+        <div class="stat-value">{{ reservas_count }}</div>
+        <div class="stat-label">Reservas</div>
+      </div>
+      <div class="stat-card text-center">
+        <div class="stat-value">{{ satisfaccion }}%</div>
+        <div class="stat-label">Satisfacción</div>
+      </div>
+      <div class="stat-card text-center">
+        <div class="stat-value">{{ empresas_count }}</div>
+        <div class="stat-label">Empresas interesadas</div>
+      </div>
+    </div>
+  </div>
+</section>

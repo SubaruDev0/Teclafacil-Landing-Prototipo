@@ -1,0 +1,118 @@
+{% load static %}
+<footer id="footer" class="dark" style="padding: 0;">
+
+    <div class="container" style="padding-top: 30px; padding-bottom: 10px;">
+
+        <!-- Footer Widgets
+        ============================================= -->
+        <div class="footer-widgets-wrap" style="padding-top: 0; padding-bottom: 0; margin-bottom: 0;">
+
+            <div class="row gx-5">
+                <div class="col-lg-5 col-md-6 mb-4 text-center text-lg-start">
+
+                    <div class="widget" style="margin-top: 0; padding-top: 0;">
+
+                        <h4 style="margin-bottom: 15px; font-size: 1.1rem; color: white;">Hector Academy</h4>
+
+                        <p style="margin-bottom: 15px; font-size: 0.9rem;">Plataforma educativa especializada en terapias complementarias con certificación internacional.</p>
+
+                        <div style="font-size: 0.9rem;">
+                            <div class="mb-1"><i class="bi-geo-alt me-2"></i>Santiago, Chile</div>
+                            <div class="mb-1"><i class="bi-envelope me-2"></i>info@hectoracademy.com</div>
+                            <div><i class="bi-telephone me-2"></i>+56 9 XXXX XXXX</div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="col-lg-2 col-md-3 col-6 mb-4 text-center text-lg-start">
+
+                    <div class="widget widget_links">
+
+                        <h4 style="margin-bottom: 15px; font-size: 1rem;">Navegación</h4>
+
+                        <ul style="margin-bottom: 0;">
+                            <li><a href="{% url 'landing:home' %}">Inicio</a></li>
+                            <li><a href="{% url 'landing:shop_catalog' %}?type=COURSE">Cursos</a></li>
+                            <li><a href="{% url 'landing:shop_catalog' %}?type=PHYSICAL">Dispositivos</a></li>
+                            <li><a href="{% url 'landing:shop_catalog' %}">Tienda</a></li>
+                        </ul>
+
+                    </div>
+
+                </div>
+
+                <div class="col-lg-3 col-md-3 col-6 mb-4 text-center text-lg-start">
+
+                    <div class="widget">
+                        <h4 style="margin-bottom: 15px; font-size: 1rem;">Legal</h4>
+
+                        <ul style="margin-bottom: 0;">
+                            <li><a href="#">Términos y Condiciones</a></li>
+                            <li><a href="#">Política de Privacidad</a></li>
+                            <li><a href="#">Preguntas Frecuentes</a></li>
+                        </ul>
+                    </div>
+
+                </div>
+
+                <div class="col-lg-2 col-md-12 mb-4 text-center text-lg-start">
+                    <div class="widget">
+                        <h4 style="margin-bottom: 15px; font-size: 1rem;">Síguenos</h4>
+                        <div class="d-flex gap-2 flex-wrap justify-content-center justify-content-lg-start">
+                            <a href="#" class="social-icon si-small si-borderless si-facebook">
+                                <i class="bi-facebook"></i>
+                                <i class="bi-facebook"></i>
+                            </a>
+
+                            <a href="#" class="social-icon si-small si-borderless si-twitter">
+                                <i class="bi-twitter-x"></i>
+                                <i class="bi-twitter-x"></i>
+                            </a>
+
+                            <a href="#" class="social-icon si-small si-borderless si-instagram">
+                                <i class="bi-instagram"></i>
+                                <i class="bi-instagram"></i>
+                            </a>
+
+                            <a href="#" class="social-icon si-small si-borderless si-linkedin">
+                                <i class="bi-linkedin"></i>
+                                <i class="bi-linkedin"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- .footer-widgets-wrap end -->
+
+    </div>
+
+    <!-- Copyrights
+    ============================================= -->
+    <div id="copyrights" style="padding: 15px 0; background-color: rgba(0,0,0,0.2); border-top: 1px solid rgba(255,255,255,0.1);">
+
+        <div class="container">
+
+            <div class="row align-items-center">
+
+                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0 px-4 px-md-3">
+                    <p style="margin: 0; font-size: 0.8rem; color: rgba(255,255,255,0.7);">
+                        &copy; {% now "Y" %} Hector Academy. Todos los derechos reservados.
+                    </p>
+                </div>
+
+                <div class="col-md-6 text-center text-md-end px-4 px-md-3">
+                    <p style="margin: 0; font-size: 0.8rem; color: rgba(255,255,255,0.7);">
+                        Developed with <span style="color: #e25555;">❤️</span> by <a href="https://www.helloworld.cl/" target="_blank" rel="noopener noreferrer" style="color: var(--hector-cyan); text-decoration: none;">HelloWorld SpA</a>
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div><!-- #copyrights end -->
+
+</footer><!-- #footer end -->

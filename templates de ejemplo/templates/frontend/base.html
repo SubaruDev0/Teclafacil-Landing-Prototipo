@@ -1,0 +1,148 @@
+{% load static %}
+<!DOCTYPE html>
+<html dir="ltr" lang="es" style="--cnvs-primary-font: Inter; --cnvs-body-font: Inter; --cnvs-themecolor: #1B9CD9; --cnvs-themecolor-rgb: 27,156,217;">
+<head>
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="x-ua-compatible" content="IE=edge">
+    <meta name="author" content="Hector Academy">
+
+    <meta name="description" content="{% block meta_description %}Cursos especializados en RTMS, biorresonancia, ondas milimétricas y terapias complementarias. Certificación internacional y dispositivos disponibles.{% endblock %}">
+
+    <link rel="canonical" href="{{ request.build_absolute_uri }}" />
+    {% block SEO %}
+    {% endblock SEO %}
+
+    <!-- Font Imports -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
+
+    <!-- Core Style -->
+    <link rel="stylesheet" href="{% static 'frontend/css/style.css' %}">
+
+    <!-- Font Icons -->
+    <link rel="stylesheet" href="{% static 'frontend/css/font-icons.css' %}">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'frontend/css/custom.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    {% block extra_css %}
+    {% endblock extra_css %}
+
+    <!-- Document Title
+    ============================================= -->
+    <title>{% block title %}Hector Academy{% endblock title %}</title>
+
+    <style>
+        {% block inline_styles %}{% endblock inline_styles %}
+    </style>
+
+</head>
+
+<body class="stretched">
+
+<div id="loading">
+    <div class="loading-content">
+        <div class="css3-spinner" style="--cnvs-loader-color:var(--cnvs-themecolor);">
+            <div class="css3-spinner-rect1"></div>
+            <div class="css3-spinner-rect2"></div>
+            <div class="css3-spinner-rect3"></div>
+            <div class="css3-spinner-rect4"></div>
+            <div class="css3-spinner-rect5"></div>
+        </div>
+        <p class="loading-text">Cargando...</p>
+    </div>
+</div>
+
+<!-- Document Wrapper
+============================================= -->
+<div id="wrapper">
+
+    <!-- Top Bar
+    ============================================= -->
+    {% block top-bar %}
+        {% include 'snippets/frontend/top-bar-base.html' %}
+    {% endblock top-bar %}
+    <!-- #top-bar end -->
+
+    <!-- Header
+    ============================================= -->
+    {% block header %}
+        {% include 'snippets/frontend/header-base.html' %}
+    {% endblock header %}
+    <!-- #header end -->
+
+    <!-- Slider
+    ============================================= -->
+    {% block slider %}
+    {% endblock slider %}
+    <!-- #slider end -->
+
+    <!-- Content
+    ============================================= -->
+    <section id="content">
+
+        {% block content %}
+        {% endblock content %}
+
+        {% block benefits %}
+        {% endblock benefits %}
+    </section>
+    <!-- #content end -->
+
+    <!-- Footer
+    ============================================= -->
+    {% block footer %}
+        {% include 'snippets/frontend/footer-base.html' %}
+    {% endblock footer %}
+    <!-- #footer end -->
+
+</div><!-- #wrapper end -->
+
+<!-- Go To Top
+============================================= -->
+<div id="gotoTop" class="uil uil-angle-up"></div>
+
+<!-- JavaScripts
+============================================= -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="{% static 'frontend/js/plugins.min.js' %}"></script>
+<script src="{% static 'frontend/js/functions.bundle.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+{% block custom-js %}
+{% endblock custom-js %}
+
+<!-- Hide loading on page load -->
+<script>
+(function() {
+    // Ocultar loading cuando la página termine de cargar
+    window.addEventListener('load', function() {
+        var loading = document.getElementById('loading');
+        if (loading) {
+            loading.style.opacity = '0';
+            loading.style.transition = 'opacity 0.5s ease';
+            setTimeout(function() {
+                loading.style.display = 'none';
+            }, 500);
+        }
+    });
+
+    // Timeout de seguridad por si la página no carga completamente
+    setTimeout(function() {
+        var loading = document.getElementById('loading');
+        if (loading && loading.style.display !== 'none') {
+            loading.style.opacity = '0';
+            loading.style.transition = 'opacity 0.5s ease';
+            setTimeout(function() {
+                loading.style.display = 'none';
+            }, 500);
+        }
+    }, 5000); // 5 segundos máximo
+})();
+</script>
+
+</body>
+</html>

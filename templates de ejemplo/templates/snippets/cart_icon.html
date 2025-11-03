@@ -1,0 +1,26 @@
+{% load i18n %}
+<!-- Cart Icon Component -->
+<div class="cart-icon-wrapper position-relative">
+    <a href="{% url 'shop:cart-detail' %}" class="btn btn-outline-primary position-relative">
+        <i class="bi bi-cart3"></i>
+        <span class="d-none d-md-inline ms-1">{% trans "Carrito" %}</span>
+        {% if cart|length > 0 %}
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-count">
+            {{ cart|length }}
+            <span class="visually-hidden">{% trans "productos en el carrito" %}</span>
+        </span>
+        {% endif %}
+    </a>
+</div>
+
+<style>
+.cart-icon-wrapper .badge {
+    font-size: 0.75rem;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+</style>

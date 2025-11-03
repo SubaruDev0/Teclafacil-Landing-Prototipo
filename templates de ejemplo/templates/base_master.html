@@ -1,0 +1,148 @@
+{% load static %}
+{% load i18n %}
+{% get_current_language as CURRENT_LANGUAGE %}
+{% get_available_languages as AVAILABLE_LANGUAGES %}
+{% get_language_info_list for AVAILABLE_LANGUAGES as languages %}
+<!DOCTYPE html>
+<html lang="{{ request.LANGUAGE_CODE }}" {% block html_attributes %}{% endblock %}>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover">
+
+    <!-- SEO meta tags -->
+    <title>{% block title %}{% trans "Hector Academy | Cursos y Capacitación en Terapias Complementarias" %}{% endblock title %}</title>
+    <meta name="description" content="{% block description %}{% trans "Cursos especializados en RTMS, biorresonancia, ondas milimétricas y terapias complementarias. Certificación internacional y dispositivos disponibles para graduados." %}{% endblock description %}">
+    <meta name="author" content="Hello World SpA">
+
+    {% block seo_tags %}
+    <!-- Canonical y Hreflang -->
+    {% block canonical %}{% endblock canonical %}
+    {% block hreflang %}{% endblock hreflang %}
+    {% block seo %}{% endblock seo %}
+    {% endblock seo_tags %}
+
+    <!-- Webmanifest + Favicon / App icons -->
+    <link rel="manifest" href="{% static 'front/manifest.json' %}">
+    <link rel="icon" type="image/png" href="{% static 'front/app-icons/icon-32x32.png' %}" sizes="32x32">
+    <link rel="apple-touch-icon" href="{% static 'front/app-icons/icon-180x180.png' %}">
+
+    {% block theme_switcher %}
+    <!-- Theme switcher (color modes) - Solo para dashboard -->
+    {% endblock theme_switcher %}
+
+    <!-- Import Google font (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet" id="google-font">
+
+    <!-- Vendor styles -->
+    {% block vendor_styles %}
+    {# Canvas theme styles #}
+    {% endblock vendor_styles %}
+
+    <!-- Canvas Core Style -->
+    <link rel="stylesheet" href="{% static 'frontend/css/style.css' %}">
+
+    <!-- Canvas Font Icons -->
+    <link rel="stylesheet" href="{% static 'frontend/css/font-icons.css' %}">
+
+    <!-- Canvas Custom CSS -->
+    <link rel="stylesheet" href="{% static 'frontend/css/custom.css' %}">
+
+    <!-- Custom Styles -->
+    {% block extra_css %}{% endblock extra_css %}
+
+    <!-- Inline Styles -->
+    <style>
+        /* Custom Hector Academy Styles */
+        :root {
+            --cnvs-themecolor: #1B9CD9;
+            --cnvs-themecolor-rgb: 27, 156, 217;
+            --hector-navy: #005A8D;
+            --hector-cyan: #1B9CD9;
+            --hector-light-blue: #4DB8E8;
+            --hector-light-gray: #F5F7FA;
+        }
+
+        {% block inline_styles %}{% endblock inline_styles %}
+    </style>
+
+    {% block extra_head %}{% endblock extra_head %}
+</head>
+
+<!-- Body with dynamic classes -->
+<body {% block body_attributes %}class="stretched"{% endblock body_attributes %}>
+
+    <!-- Page loading spinner -->
+    <div id="loading">
+        <div class="loading-content">
+            <div class="css3-spinner" style="--cnvs-loader-color:var(--cnvs-themecolor);">
+                <div class="css3-spinner-rect1"></div>
+                <div class="css3-spinner-rect2"></div>
+                <div class="css3-spinner-rect3"></div>
+                <div class="css3-spinner-rect4"></div>
+                <div class="css3-spinner-rect5"></div>
+            </div>
+            <p class="loading-text">Cargando...</p>
+        </div>
+    </div>
+
+    <!-- Document Wrapper -->
+    <div id="wrapper">
+        {% block main_content %}
+        <!-- This block will be overridden by child templates -->
+        {% endblock main_content %}
+    </div><!-- #wrapper end -->
+
+    <!-- Go To Top -->
+    {% block back_to_top %}
+    <div id="gotoTop" class="uil uil-angle-up"></div>
+    {% endblock back_to_top %}
+
+    <!-- JavaScripts -->
+{% block vendor_scripts %}
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Canvas Theme Scripts -->
+    <script src="{% static 'frontend/js/plugins.min.js' %}"></script>
+    <script src="{% static 'frontend/js/functions.bundle.js' %}"></script>
+
+    <!-- sweetalert2 scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+{% endblock vendor_scripts %}
+
+    <!-- Custom JS Block -->
+    {% block extra_js %}{% endblock extra_js %}
+
+    <!-- Hide loading on page load -->
+    <script>
+    (function() {
+        // Ocultar loading cuando la página termine de cargar
+        window.addEventListener('load', function() {
+            var loading = document.getElementById('loading');
+            if (loading) {
+                loading.style.opacity = '0';
+                loading.style.transition = 'opacity 0.5s ease';
+                setTimeout(function() {
+                    loading.style.display = 'none';
+                }, 500);
+            }
+        });
+
+        // Timeout de seguridad por si la página no carga completamente
+        setTimeout(function() {
+            var loading = document.getElementById('loading');
+            if (loading && loading.style.display !== 'none') {
+                loading.style.opacity = '0';
+                loading.style.transition = 'opacity 0.5s ease';
+                setTimeout(function() {
+                    loading.style.display = 'none';
+                }, 500);
+            }
+        }, 5000); // 5 segundos máximo
+    })();
+    </script>
+</body>
+</html>

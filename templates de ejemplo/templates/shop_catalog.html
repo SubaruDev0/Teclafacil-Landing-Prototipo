@@ -1,0 +1,562 @@
+{% extends 'base_landing.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Catálogo de Productos" %} - Hector Academy{% endblock %}
+
+{% block extra_css %}
+<style>
+    .accordion-alt .accordion-button {
+        padding: 0.75rem 0;
+        background: transparent;
+        box-shadow: none;
+    }
+    .accordion-alt .accordion-button:not(.collapsed) {
+        background: transparent;
+        box-shadow: none;
+    }
+    .accordion-alt .accordion-button::after {
+        width: 1.25rem;
+        height: 1.25rem;
+        background-size: 1.25rem;
+    }
+    .accordion-alt .accordion-item {
+        border: 0;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    .form-check-label {
+        cursor: pointer;
+    }
+    .text-nav {
+        color: #454056;
+    }
+    .fs-xs {
+        font-size: 0.75rem;
+    }
+    .product-card {
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    }
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+    .badge-discount {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 2;
+    }
+    .price-old {
+        text-decoration: line-through;
+        opacity: 0.6;
+    }
+    .product-image-wrapper {
+        height: 250px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+    }
+    .product-image-wrapper img {
+        max-height: 100%;
+        width: auto;
+        object-fit: contain;
+    }
+    .form-select-flush {
+        background: transparent;
+        border: 0;
+        padding-left: 0.5rem;
+    }
+    .offcanvas-lg {
+        --bs-offcanvas-width: 320px;
+    }
+    @media (min-width: 992px) {
+        .offcanvas-lg {
+            position: static;
+            z-index: auto;
+            flex-grow: 1;
+            visibility: visible !important;
+            background-color: transparent;
+            border: 0;
+            transform: none !important;
+            transition: none;
+        }
+        .offcanvas-lg .offcanvas-header {
+            display: none;
+        }
+        .offcanvas-lg .offcanvas-body {
+            padding: 0;
+            overflow-y: visible;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5 mt-5 mb-lg-4 mb-xl-5">
+
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="pt-lg-3 pb-2 breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'landing:home' %}">{% trans "Inicio" %}</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">{% trans "Catálogo" %}</li>
+        </ol>
+    </nav>
+
+    <!-- Banner -->
+    {% if featured_products %}
+    <section class="rounded-1 overflow-hidden mb-5" style="background-color: #e3e5e9;" data-bs-theme="light">
+        <div class="row align-items-center g-0">
+            <div class="col-md-6 offset-xl-1 text-center text-md-start">
+                <div class="py-4 px-4 px-sm-5 pe-md-0 ps-xl-4">
+                    <p class="text-body fs-xs text-uppercase pt-3 pt-md-0 mb-3 mb-lg-4">{% trans "Productos destacados" %}</p>
+                    <h2 class="h1 pb-2 pb-xl-3">{% trans "Formación profesional con" %} <span class="text-primary">{% trans "descuentos hasta 40%" %}</span></h2>
+                    <a class="btn btn-sm btn-outline-dark" href="#products" data-bs-theme="light">{% trans "Explorar" %}</a>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-5 d-flex justify-content-end">
+                <div class="p-5">
+                    <i class="bi bi-mortarboard-fill text-primary" style="font-size: 180px; opacity: 0.2;"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Page title -->
+    <div class="row pt-xl-3 mt-n1 mt-sm-0">
+        <div class="col-lg-9 offset-lg-3 pt-lg-3">
+            <h1 class="pb-2 pb-sm-3">
+                {% if selected_category %}
+                    {{ selected_category.name }}
+                {% else %}
+                    {% trans "Todos los productos" %}
+                {% endif %}
+            </h1>
+        </div>
+    </div>
+
+    <div class="row pb-2 pb-sm-4">
+
+        <!-- Sidebar (offcanvas on screens < 992px) -->
+        <aside class="col-lg-3">
+            <div class="offcanvas-lg offcanvas-start" id="shopSidebar">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title">{% trans "Filtros" %}</h5>
+                    <button class="btn-close" type="button" data-bs-dismiss="offcanvas" data-bs-target="#shopSidebar" aria-label="Close"></button>
+                </div>
+
+                <!-- Body -->
+                <div class="offcanvas-body pt-2 pt-lg-0 pe-lg-4">
+
+                    <!-- Categories (accordion with checkboxes) -->
+                    <h3 class="h5">{% trans "Categorías" %}</h3>
+                    <div class="accordion accordion-alt pb-2 mb-4" id="shopCategories">
+
+                        <!-- Categoría: Todos -->
+                        <div class="accordion-item mb-0">
+                            <h4 class="accordion-header">
+                                <button class="accordion-button fs-xl fw-medium py-2" type="button" data-bs-toggle="collapse" data-bs-target="#allCategories" aria-expanded="true" aria-controls="allCategories">
+                                    <span class="fs-base">{% trans "Todas las categorías" %}</span>
+                                </button>
+                            </h4>
+                            <div class="accordion-collapse collapse show" id="allCategories" data-bs-parent="#shopCategories">
+                                <div class="accordion-body py-1 mb-1">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="cat-all" {% if not selected_category and not product_type %}checked{% endif %}
+                                               onchange="if(this.checked) window.location.href='{% url 'landing:shop_catalog' %}'">
+                                        <label class="form-check-label d-flex align-items-center" for="cat-all">
+                                            <span class="text-nav fw-medium">{% trans "Ver todos" %}</span>
+                                            <span class="fs-xs text-body-secondary ms-auto">{{ total_products }}</span>
+                                        </label>
+                                    </div>
+
+                                    <!-- Tipos de producto -->
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="type-physical" {% if product_type == 'PHYSICAL' %}checked{% endif %}
+                                               onchange="if(this.checked) window.location.href='?type=PHYSICAL'">
+                                        <label class="form-check-label d-flex align-items-center" for="type-physical">
+                                            <span class="text-nav fw-medium">{% trans "Productos Físicos" %}</span>
+                                            <span class="fs-xs text-body-secondary ms-auto">{{ physical_count|default:0 }}</span>
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="type-course" {% if product_type == 'COURSE' %}checked{% endif %}
+                                               onchange="if(this.checked) window.location.href='?type=COURSE'">
+                                        <label class="form-check-label d-flex align-items-center" for="type-course">
+                                            <span class="text-nav fw-medium">{% trans "Cursos Online" %}</span>
+                                            <span class="fs-xs text-body-secondary ms-auto">{{ course_count|default:0 }}</span>
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="type-digital" {% if product_type == 'DIGITAL' %}checked{% endif %}
+                                               onchange="if(this.checked) window.location.href='?type=DIGITAL'">
+                                        <label class="form-check-label d-flex align-items-center" for="type-digital">
+                                            <span class="text-nav fw-medium">{% trans "Productos Digitales" %}</span>
+                                            <span class="fs-xs text-body-secondary ms-auto">{{ digital_count|default:0 }}</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Categorías dinámicas -->
+                        {% for category in categories %}
+                        <div class="accordion-item mb-0">
+                            <h4 class="accordion-header">
+                                <button class="accordion-button {% if selected_category != category %}collapsed{% endif %} fs-xl fw-medium py-2" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#cat-{{ category.pk }}"
+                                        aria-expanded="{% if selected_category == category %}true{% else %}false{% endif %}"
+                                        aria-controls="cat-{{ category.pk }}">
+                                    <span class="fs-base">{{ category.name }}</span>
+                                </button>
+                            </h4>
+                            <div class="accordion-collapse collapse {% if selected_category == category %}show{% endif %}" id="cat-{{ category.pk }}" data-bs-parent="#shopCategories">
+                                <div class="accordion-body py-1 mb-1">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="cat-{{ category.pk }}-all" {% if selected_category == category and not product_type %}checked{% endif %}
+                                               onchange="if(this.checked) window.location.href='?category={{ category.pk }}'">
+                                        <label class="form-check-label d-flex align-items-center" for="cat-{{ category.pk }}-all">
+                                            <span class="text-nav fw-medium">{% trans "Ver todos" %}</span>
+                                            <span class="fs-xs text-body-secondary ms-auto">{{ category.product_count }}</span>
+                                        </label>
+                                    </div>
+
+                                    <!-- Subcategorías por tipo -->
+                                    {% if category.physical_count > 0 %}
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="cat-{{ category.pk }}-physical"
+                                               {% if selected_category == category and product_type == 'PHYSICAL' %}checked{% endif %}
+                                               onchange="if(this.checked) window.location.href='?category={{ category.pk }}&type=PHYSICAL'">
+                                        <label class="form-check-label d-flex align-items-center" for="cat-{{ category.pk }}-physical">
+                                            <span class="text-nav fw-medium">{% trans "Físicos" %}</span>
+                                            <span class="fs-xs text-body-secondary ms-auto">{{ category.physical_count|default:0 }}</span>
+                                        </label>
+                                    </div>
+                                    {% endif %}
+
+                                    {% if category.course_count > 0 %}
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="cat-{{ category.pk }}-course"
+                                               {% if selected_category == category and product_type == 'COURSE' %}checked{% endif %}
+                                               onchange="if(this.checked) window.location.href='?category={{ category.pk }}&type=COURSE'">
+                                        <label class="form-check-label d-flex align-items-center" for="cat-{{ category.pk }}-course">
+                                            <span class="text-nav fw-medium">{% trans "Cursos" %}</span>
+                                            <span class="fs-xs text-body-secondary ms-auto">{{ category.course_count|default:0 }}</span>
+                                        </label>
+                                    </div>
+                                    {% endif %}
+
+                                    {% if category.digital_count > 0 %}
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="cat-{{ category.pk }}-digital"
+                                               {% if selected_category == category and product_type == 'DIGITAL' %}checked{% endif %}
+                                               onchange="if(this.checked) window.location.href='?category={{ category.pk }}&type=DIGITAL'">
+                                        <label class="form-check-label d-flex align-items-center" for="cat-{{ category.pk }}-digital">
+                                            <span class="text-nav fw-medium">{% trans "Digitales" %}</span>
+                                            <span class="fs-xs text-body-secondary ms-auto">{{ category.digital_count|default:0 }}</span>
+                                        </label>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Price (range inputs) -->
+                    <h3 class="h5">{% trans "Precio" %}</h3>
+                    <form method="get" action="" class="pb-3 mb-4">
+                        {% if selected_category %}
+                        <input type="hidden" name="category" value="{{ selected_category.pk }}">
+                        {% endif %}
+                        {% if product_type %}
+                        <input type="hidden" name="type" value="{{ product_type }}">
+                        {% endif %}
+                        <div class="d-flex">
+                            <div class="d-flex align-items-center w-50">
+                                <label class="form-label fs-xs me-2 mb-0" for="price-min">{% trans "Desde" %}</label>
+                                <input class="form-control form-control-sm" type="number" style="max-width: 6rem;" id="price-min" name="min_price" value="{{ min_price }}" placeholder="0">
+                            </div>
+                            <div class="d-flex align-items-center justify-content-end w-50">
+                                <label class="form-label fs-xs me-2 mb-0" for="price-max">{% trans "Hasta" %}</label>
+                                <input class="form-control form-control-sm" type="number" style="max-width: 6rem;" id="price-max" name="max_price" value="{{ max_price }}" placeholder="9999">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-sm btn-primary w-100 mt-3">{% trans "Aplicar precio" %}</button>
+                    </form>
+
+                    <!-- Level (for courses) -->
+                    {% if has_courses %}
+                    <h3 class="h5">{% trans "Nivel del curso" %}</h3>
+                    <div class="pb-2">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="BEGINNER" id="level1"
+                                   onchange="updateFilters()">
+                            <label class="form-check-label d-flex align-items-center" for="level1">
+                                <span class="text-nav fw-medium">{% trans "Principiante" %}</span>
+                                <span class="fs-xs text-body-secondary ms-auto">{{ beginner_count|default:0 }}</span>
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="INTERMEDIATE" id="level2"
+                                   onchange="updateFilters()">
+                            <label class="form-check-label d-flex align-items-center" for="level2">
+                                <span class="text-nav fw-medium">{% trans "Intermedio" %}</span>
+                                <span class="fs-xs text-body-secondary ms-auto">{{ intermediate_count|default:0 }}</span>
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="ADVANCED" id="level3"
+                                   onchange="updateFilters()">
+                            <label class="form-check-label d-flex align-items-center" for="level3">
+                                <span class="text-nav fw-medium">{% trans "Avanzado" %}</span>
+                                <span class="fs-xs text-body-secondary ms-auto">{{ advanced_count|default:0 }}</span>
+                            </label>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </aside>
+
+        <!-- Product grid -->
+        <div class="col-lg-9">
+
+            <!-- Active filters + Sorting -->
+            <div class="d-flex align-items-start justify-content-between mb-4">
+                <div class="me-3">
+                    <!-- Mobile filter toggle -->
+                    <button class="btn btn-outline-secondary d-lg-none mb-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#shopSidebar">
+                        <i class="ai-filter me-2"></i>
+                        {% trans "Filtros" %}
+                    </button>
+
+                    <!-- Active filters -->
+                    {% if selected_category or product_type or min_price or max_price %}
+                    <div class="pt-2 pt-lg-0">
+                        {% if selected_category %}
+                        <a class="d-inline-block border rounded-pill fs-xs fw-medium text-body text-decoration-none py-1 px-2 me-2 mb-2" href="{% url 'landing:shop_catalog' %}">
+                            <span class="d-inline-flex align-items-center text-nowrap px-1">
+                                {{ selected_category.name }}<i class="ai-circle-x fs-base ms-1"></i>
+                            </span>
+                        </a>
+                        {% endif %}
+                        {% if product_type %}
+                        <a class="d-inline-block border rounded-pill fs-xs fw-medium text-body text-decoration-none py-1 px-2 me-2 mb-2"
+                           href="{% if selected_category %}?category={{ selected_category.pk }}{% else %}{% url 'landing:shop_catalog' %}{% endif %}">
+                            <span class="d-inline-flex align-items-center text-nowrap px-1">
+                                {% if product_type == 'PHYSICAL' %}{% trans "Físicos" %}{% elif product_type == 'COURSE' %}{% trans "Cursos" %}{% else %}{% trans "Digitales" %}{% endif %}<i class="ai-circle-x fs-base ms-1"></i>
+                            </span>
+                        </a>
+                        {% endif %}
+                        {% if min_price or max_price %}
+                        <a class="d-inline-block border rounded-pill fs-xs fw-medium text-body text-decoration-none py-1 px-2 me-2 mb-2"
+                           href="{% if selected_category %}?category={{ selected_category.pk }}{% if product_type %}&type={{ product_type }}{% endif %}{% elif product_type %}?type={{ product_type }}{% else %}{% url 'landing:shop_catalog' %}{% endif %}">
+                            <span class="d-inline-flex align-items-center text-nowrap px-1">
+                                ${{ min_price|default:"0" }} - ${{ max_price|default:"∞" }}<i class="ai-circle-x fs-base ms-1"></i>
+                            </span>
+                        </a>
+                        {% endif %}
+                        <a class="btn btn-sm btn-secondary rounded-pill fw-medium py-1 px-2" href="{% url 'landing:shop_catalog' %}">
+                            <span class="px-1">{% trans "Limpiar filtros" %}</span>
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Sorting -->
+                <div class="d-flex align-items-center flex-shrink-0 mb-2">
+                    <span class="text-body-secondary text-nowrap fs-sm">{% trans "Ordenar por:" %}</span>
+                    <select class="form-select form-select-flush py-0" onchange="location = this.value;">
+                        <option value="?{% if selected_category %}category={{ selected_category.pk }}&{% endif %}{% if product_type %}type={{ product_type }}&{% endif %}{% if min_price %}min_price={{ min_price }}&{% endif %}{% if max_price %}max_price={{ max_price }}&{% endif %}">
+                            {% trans "Más populares" %}
+                        </option>
+                        <option value="?{% if selected_category %}category={{ selected_category.pk }}&{% endif %}{% if product_type %}type={{ product_type }}&{% endif %}{% if min_price %}min_price={{ min_price }}&{% endif %}{% if max_price %}max_price={{ max_price }}&{% endif %}sort=price_asc" {% if sort == 'price_asc' %}selected{% endif %}>
+                            {% trans "Precio: Menor-Mayor" %}
+                        </option>
+                        <option value="?{% if selected_category %}category={{ selected_category.pk }}&{% endif %}{% if product_type %}type={{ product_type }}&{% endif %}{% if min_price %}min_price={{ min_price }}&{% endif %}{% if max_price %}max_price={{ max_price }}&{% endif %}sort=price_desc" {% if sort == 'price_desc' %}selected{% endif %}>
+                            {% trans "Precio: Mayor-Menor" %}
+                        </option>
+                        <option value="?{% if selected_category %}category={{ selected_category.pk }}&{% endif %}{% if product_type %}type={{ product_type }}&{% endif %}{% if min_price %}min_price={{ min_price }}&{% endif %}{% if max_price %}max_price={{ max_price }}&{% endif %}sort=name" {% if sort == 'name' %}selected{% endif %}>
+                            {% trans "Orden A-Z" %}
+                        </option>
+                        <option value="?{% if selected_category %}category={{ selected_category.pk }}&{% endif %}{% if product_type %}type={{ product_type }}&{% endif %}{% if min_price %}min_price={{ min_price }}&{% endif %}{% if max_price %}max_price={{ max_price }}&{% endif %}sort=newest" {% if sort == 'newest' %}selected{% endif %}>
+                            {% trans "Más recientes" %}
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Products grid -->
+            <div class="row g-4" id="products">
+                {% for product in products %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card product-card h-100 shadow-sm position-relative">
+                        <!-- Badge de descuento -->
+                        {% if product.get_discount_percentage > 0 %}
+                        <span class="badge bg-danger badge-discount">-{{ product.get_discount_percentage }}%</span>
+                        {% endif %}
+
+                        <!-- Badge de tipo de producto -->
+                        {% if product.is_course %}
+                        <span class="badge bg-info position-absolute top-0 start-0 m-2">
+                            <i class="bi bi-mortarboard"></i> {% trans "Curso" %}
+                        </span>
+                        {% elif product.is_digital %}
+                        <span class="badge bg-success position-absolute top-0 start-0 m-2">
+                            <i class="bi bi-cloud-download"></i> {% trans "Digital" %}
+                        </span>
+                        {% endif %}
+
+                        <!-- Imagen del producto -->
+                        <div class="product-image-wrapper">
+                            {% if product.images.exists %}
+                                <img src="{{ product.images.first.image.url }}" class="card-img-top" alt="{{ product.name }}">
+                            {% else %}
+                                <div class="text-center text-muted p-5">
+                                    {% if product.is_course %}
+                                        <i class="bi bi-mortarboard" style="font-size: 72px;"></i>
+                                    {% elif product.is_digital %}
+                                        <i class="bi bi-file-earmark-zip" style="font-size: 72px;"></i>
+                                    {% else %}
+                                        <i class="bi bi-box" style="font-size: 72px;"></i>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="card-body d-flex flex-column">
+                            <!-- Categoría -->
+                            <small class="text-muted mb-2">{{ product.category.name }}</small>
+
+                            <!-- Nombre del producto -->
+                            <h5 class="card-title flex-grow-1">
+                                <a href="{{ product.get_frontend_url }}" class="text-decoration-none text-dark">
+                                    {{ product.name|truncatechars:50 }}
+                                </a>
+                            </h5>
+
+                            <!-- Descripción corta -->
+                            {% if product.short_description %}
+                            <p class="card-text text-muted small">{{ product.short_description|truncatechars:80 }}</p>
+                            {% endif %}
+
+                            <!-- Información adicional para cursos -->
+                            {% if product.is_course %}
+                            <div class="mb-3">
+                                {% if product.course_duration_hours %}
+                                <small class="text-muted">
+                                    <i class="bi bi-clock"></i> {{ product.course_duration_hours }} {% trans "horas" %}
+                                </small>
+                                {% endif %}
+                                {% if product.course_level %}
+                                <small class="text-muted ms-2">
+                                    <i class="bi bi-bar-chart"></i> {{ product.get_course_level_display }}
+                                </small>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+
+                            <!-- Información de stock para productos físicos -->
+                            {% if product.is_physical %}
+                            <div class="mb-3">
+                                {% if product.is_in_stock %}
+                                <span class="badge bg-success">
+                                    <i class="bi bi-check-circle"></i> {% trans "En stock" %} ({{ product.stock }})
+                                </span>
+                                {% else %}
+                                <span class="badge bg-danger">
+                                    <i class="bi bi-x-circle"></i> {% trans "Agotado" %}
+                                </span>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+
+                            <!-- Precio -->
+                            <div class="d-flex justify-content-between align-items-center mt-auto">
+                                <div>
+                                    {% if product.discount_price %}
+                                    <span class="h5 text-danger mb-0">${{ product.discount_price }}</span>
+                                    <span class="price-old ms-2">${{ product.price }}</span>
+                                    {% else %}
+                                    <span class="h5 mb-0">${{ product.price }}</span>
+                                    {% endif %}
+                                </div>
+                                <a href="{{ product.get_frontend_url }}" class="btn btn-primary btn-sm">
+                                    <i class="bi bi-eye"></i> {% trans "Ver más" %}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="alert alert-info text-center" role="alert">
+                        <i class="bi bi-info-circle me-2"></i>
+                        {% trans "No se encontraron productos con los filtros seleccionados." %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if products.has_other_pages %}
+            <nav aria-label="{% trans 'Paginación de productos' %}" class="mt-5">
+                <ul class="pagination justify-content-center">
+                    {% if products.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ products.previous_page_number }}{% if selected_category %}&category={{ selected_category.pk }}{% endif %}{% if product_type %}&type={{ product_type }}{% endif %}{% if min_price %}&min_price={{ min_price }}{% endif %}{% if max_price %}&max_price={{ max_price }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">
+                            <i class="ai-chevron-left"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% for num in products.paginator.page_range %}
+                        {% if products.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                        {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}{% if selected_category %}&category={{ selected_category.pk }}{% endif %}{% if product_type %}&type={{ product_type }}{% endif %}{% if min_price %}&min_price={{ min_price }}{% endif %}{% if max_price %}&max_price={{ max_price }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">
+                                {{ num }}
+                            </a>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if products.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ products.next_page_number }}{% if selected_category %}&category={{ selected_category.pk }}{% endif %}{% if product_type %}&type={{ product_type }}{% endif %}{% if min_price %}&min_price={{ min_price }}{% endif %}{% if max_price %}&max_price={{ max_price }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">
+                            <i class="ai-chevron-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Function to update filters
+    function updateFilters() {
+        // Esta función puede ser expandida para manejar múltiples filtros simultáneos
+        console.log('Updating filters...');
+    }
+
+    // Initialize tooltips
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
+    });
+</script>
+{% endblock %}

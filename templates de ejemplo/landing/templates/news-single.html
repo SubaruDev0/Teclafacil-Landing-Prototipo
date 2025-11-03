@@ -1,0 +1,816 @@
+{% extends 'base_landing.html' %}
+{% load blog_extras %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{{ post.title|capfirst }} - {{ block.super }}{% endblock %}
+{% block description %}{{ meta_description|default:'Mantente informado sobre las últimas novedades, eventos y logros del sector forestal PyME en Chile' }}{% endblock %}
+
+{% block seo %}
+    <!-- Meta general -->
+    <meta name="keywords" content="{% if post_tags %}{% for tag in post_tags %}{{ tag.name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% endif %}" />
+    <meta name="author" content="{{ post.author.get_full_name|default:post.author.username }}" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="{{ post.title }}" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="{{ request.build_absolute_uri }}" />
+    {% get_post_image_url post as og_image %}
+    {% if og_image %}
+        <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ og_image }}" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="{{ post.title }}" />
+    {% endif %}
+    <meta property="og:description" content="{% if meta_description %}{{ meta_description }}{% else %}{{ post.body|striptags|truncatechars:160 }}{% endif %}" />
+    <meta property="og:site_name" content="Hector Academy" />
+    <meta property="og:locale" content="es_CL" />
+    {% if post.publish %}<meta property="article:published_time" content="{{ post.publish|date:'c' }}" />{% endif %}
+    {% if post.updated %}<meta property="article:modified_time" content="{{ post.updated|date:'c' }}" />{% endif %}
+    <meta property="article:author" content="{{ post.author.get_full_name|default:post.author.username }}" />
+    {% if post.category %}
+        <meta property="article:section" content="{{ post.category.name }}" />
+    {% endif %}
+    {% for tag in post_tags %}
+        <meta property="article:tag" content="{{ tag.name }}" />
+    {% endfor %}
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta property="twitter:domain" content="{{ request.get_host }}">
+    <meta property="twitter:url" content="{{ request.build_absolute_uri }}">
+    <meta name="twitter:title" content="{{ post.title }}">
+    <meta name="twitter:description" content="{% if meta_description %}{{ meta_description }}{% else %}{{ post.body|striptags|truncatechars:160 }}{% endif %}">
+    {% if og_image %}
+        <meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{{ og_image }}">
+    {% endif %}
+
+    <!-- JSON-LD BlogPosting -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "{{ request.build_absolute_uri }}"
+        },
+        "headline": "{{ post.title|escapejs }}",
+        {% if og_image %}
+        "image": "{{ request.scheme }}://{{ request.get_host }}{{ og_image }}",
+        {% endif %}
+        {% if post.publish %}
+        "datePublished": "{{ post.publish|date:'c' }}",
+        {% endif %}
+        {% if post.updated %}
+        "dateModified": "{{ post.updated|date:'c' }}",
+        {% endif %}
+        "author": {
+            "@type": "Person",
+            "name": "{{ post.author.get_full_name|default:post.author.username|escapejs }}"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Hector Academy",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "{{ request.scheme }}://{{ request.get_host }}{% static 'assets/img/logo.png' %}"
+            }
+        },
+        "description": "{% if meta_description %}{{ meta_description|escapejs }}{% else %}{{ post.body|striptags|truncatechars:160|escapejs }}{% endif %}",
+        {% if post.category %}
+        "articleSection": "{{ post.category.name|escapejs }}",
+        {% endif %}
+        "keywords": "{% if post_tags %}{% for tag in post_tags %}{{ tag.name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% endif %}"
+    }
+    </script>
+
+{% endblock %}
+
+{% block canonical %}
+    <link rel="canonical" href="{{ canonical_url }}" />
+{% endblock %}
+
+{% block hreflang %}
+    {% for lang_code, url in language_urls.items %}
+        <link rel="alternate" hreflang="{{ lang_code }}" href="{{ url }}" />
+    {% endfor %}
+    {% if language_urls.es %}
+        <link rel="alternate" hreflang="x-default" href="{{ language_urls.es }}" />
+    {% endif %}
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* FE-03: Estilos específicos del blog (mejorados para sidebar y layout) */
+.text-truncate-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.masonry-grid-item .card { display: flex; flex-direction: column; height: auto; box-shadow: 0 4px 12px rgba(0,0,0,0.06); border-radius: 1rem; transition: transform .2s, box-shadow .2s; }
+.masonry-grid-item .card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.12); }
+.masonry-grid-item .card-img-top { height: 200px; object-fit: cover; border-top-left-radius: 1rem; border-top-right-radius: 1rem; }
+.search-highlight { background-color: #fff176; padding: 0.2rem 0.4rem; border-radius: 0.25rem; }
+.post-content { font-size: 1.1rem; line-height: 1.7; color: #374151; }
+.post-content h2, .post-content h3, .post-content h4 { margin:2.5rem 0 1.5rem; color:#111827; font-weight:600; }
+.post-content p { margin-bottom:1.5rem; }
+.post-content img { max-width:100%; height:auto; border-radius:.5rem; margin:1.5rem 0; }
+.tag-link { display:inline-block; padding:.25rem .75rem; margin:.25rem; background-color:transparent; border:1px solid #6c757d; border-radius:1rem; text-decoration:none; color:#6c757d; font-size:.875rem; transition: all .15s; }
+.tag-link:hover { background-color:var(--bs-primary, #0d6efd); color:#fff; border-color:var(--bs-primary, #0d6efd); transform:translateY(-1px); }
+.related-post { transition: transform .2s; }
+.related-post:hover { transform: translateY(-2px); }
+.sidebar-widget { margin-bottom: 2rem; }
+.card.bg-secondary { background-color: var(--bs-secondary, #f8f9fa) !important; }
+.comment-avatar {
+    width: 44px;
+    height: 44px;
+    background: #e9ecef;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: #495057;
+    font-weight: 700;
+    font-size: 0.95rem;
+    line-height: 1;
+    flex-shrink: 0;
+    text-transform: uppercase;
+}
+
+.comment-avatar span { display:block; width:100%; height:100%; display:flex; align-items:center; justify-content:center; }
+
+/* Comentario: layout en fila (avatar | contenido) */
+.post-comments .comment-item {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start; /* avatar al tope del contenido cuando nombre+fecha son columna */
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+}
+
+.post-comments .comment-meta {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    min-width: 0;
+}
+
+/* quitar padding-left por la clase .ps-3 que usamos en HTML (lo controlamos con gap) */
+.post-comments .comment-meta .ps-3 { padding-left: 0 !important; }
+
+.post-comments .comment-body { margin-top: 0.25rem; flex: 1 1 auto; }
+
+/* Responsivo: en pantallas muy pequeñas, apilar el contenido para mayor legibilidad */
+@media (max-width: 575px) {
+    .post-comments .comment-item { flex-direction: column; gap: 0.5rem; }
+    .post-comments .comment-meta { align-items: center; }
+}
+
+/* Offcanvas behavior: use as panel on lg+ screens */
+.offcanvas-lg { --bs-offcanvas-width: 360px; }
+@media (min-width: 992px) {
+    .offcanvas-lg {
+        position: static !important;
+        transform: none !important;
+        visibility: visible !important;
+        border: none !important;
+        box-shadow: none !important;
+        max-width: none !important;
+        width: 100% !important;
+        background: transparent !important;
+    }
+    .offcanvas-lg .offcanvas-body { padding: 0; }
+    aside .offcanvas-header { display:none; }
+}
+/* Search input with icon */
+.position-relative .ai-search { color: #6c757d; }
+.position-relative input[type="search"] { padding-left: 3rem; }
+/* Responsive typography */
+@media(max-width:767px){.post-content{font-size:1rem}.masonry-grid-item .card-img-top{height:150px;}}
+@media(min-width:768px) and (max-width:1199px){.post-content{font-size:1.05rem}.masonry-grid-item .card-img-top{height:180px;}}
+@media(min-width:1200px){.post-content{font-size:1.1rem}.masonry-grid-item .card-img-top{height:200px;}}
+
+/* --- FIX: make captcha refresh button visible on all backgrounds --- */
+.js-captcha-refresh {
+    /* Square button matching captcha image height */
+    width: 48px !important;
+    min-width: 48px !important;
+    height: 48px !important; /* align with captcha image/inputs */
+
+    /* Center icon and remove extra padding to avoid thin appearance */
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+
+    /* Strong contrast by default */
+    background-color: #ffffff !important;
+    color: #212529 !important; /* dark text */
+    border: 1px solid rgba(0,0,0,0.12) !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04) !important;
+    border-radius: 0.375rem !important;
+
+    /* Make sure the button doesn't collapse inside input-group */
+    line-height: 1 !important;
+    font-size: 1.15rem !important;
+}
+
+/* Larger icon for better visibility */
+.js-captcha-refresh i {
+    font-size: 1.25rem !important;
+    line-height: 1 !important;
+    color: inherit !important;
+}
+
+/* Hover / focus states that improve visibility */
+.js-captcha-refresh:hover,
+.js-captcha-refresh:focus {
+    background-color: #0d6efd !important; /* Bootstrap primary fallback */
+    color: #ffffff !important;
+    border-color: #0d6efd !important;
+    text-decoration: none !important;
+    outline: none !important;
+    box-shadow: 0 2px 6px rgba(13,110,253,0.2) !important;
+}
+
+/* Dark theme: invert for contrast */
+.card.bg-dark .js-captcha-refresh,
+.bg-dark .js-captcha-refresh {
+    background-color: rgba(255,255,255,0.12) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255,255,255,0.12) !important;
+}
+
+/* === Ajustes visuales estilo 'shop' (usar variable de tema) === */
+/* Hacer el hero coherente con la paleta principal */
+#news-hero .jarallax-img { filter: brightness(0.65) saturate(1.05); }
+#news-hero .hero-overlay {
+    background: linear-gradient(180deg, rgba(var(--cnvs-themecolor-rgb),0.78), rgba(0,0,0,0.45));
+    mix-blend-mode: multiply;
+}
+#news-hero h1, #news-hero p { color: #ffffff; }
+
+/* Botones primarios usan color del tema */
+.btn-primary, .btn.btn-primary { background-color: var(--cnvs-themecolor) !important; border-color: var(--cnvs-themecolor) !important; }
+
+/* Pulido de cards para parecer tienda */
+.masonry-grid-item .card, .related-post, .card.bg-secondary { background: #ffffff; border: 1px solid rgba(0,0,0,0.04); box-shadow: 0 6px 18px rgba(15,23,42,0.06); }
+.masonry-grid-item .card .card-title a, .related-post .card-title a { color: #0f172a; }
+
+/* Badges / tags con tema */
+.tag-link:hover, .tag-badge.active, .badge.theme { background-color: var(--cnvs-themecolor); border-color: var(--cnvs-themecolor); color: #fff !important; }
+
+/* Sidebar titles color */
+.sidebar-title, #sidebarNews .offcanvas-title { color: var(--cnvs-themecolor); }
+#sidebarNews .offcanvas-header { border-bottom-color: rgba(var(--cnvs-themecolor-rgb),0.12); }
+
+/* Related posts hover accent */
+.related-post:hover, .list-group-item-action:hover { transform: translateY(-4px); background-color: rgba(var(--cnvs-themecolor-rgb),0.04); border-left: 3px solid var(--cnvs-themecolor); }
+
+/* Search focus */
+#sidebarNews .search-input:focus, #id_sidebar_search:focus { border-color: var(--cnvs-themecolor) !important; box-shadow: 0 0 0 6px rgba(var(--cnvs-themecolor-rgb),0.06); }
+
+/* Responsive tweaks */
+@media (max-width: 767px) {
+    #news-hero { padding-top: 3rem; padding-bottom: 3rem; }
+    #news-hero .display-2 { font-size: 2.25rem; }
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<section id="news-hero" class="position-relative bg-dark py-5">
+    <div class="jarallax position-absolute top-0 start-0 w-100 h-100" data-jarallax data-speed="0.4">
+        <div class="jarallax-img" style="background-image:url({% static 'assets/img/about/about.webp' %});"></div>
+    </div>
+    <div class="position-absolute top-0 start-0 w-100 h-100 hero-overlay" style="z-index:1;"></div>
+    <div class="container position-relative z-2 py-5" data-bs-theme="dark">
+        <div class="row py-5">
+            <div class="col-lg-10 col-xl-9">
+                <!-- Breadcrumb -->
+                <nav aria-label="breadcrumb">
+                    <ol class="pt-lg-3 pb-lg-4 pb-2 breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'landing:home' %}">{% trans "Inicio" %}</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'landing:news_list' %}">{% trans "Noticias" %}</a></li>
+                        {% if post.category %}
+                        <li class="breadcrumb-item"><a href="{% url 'landing:news_list' %}?category={{ post.category.slug }}">{{ post.category.name }}</a></li>
+                        {% endif %}
+                        <li class="breadcrumb-item active" aria-current="page">{{ post.title|truncatechars:50 }}</li>
+                    </ol>
+                </nav>
+                <h1 class="display-2 text-white pb-2 pb-sm-3">{{ post.title }}</h1>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Main content -->
+<section class="container pt-5 mt-5">
+    <div class="row">
+        <!-- Ajuste de columnas: main más ancho en lg, sidebar más generoso -->
+        <div class="col-lg-8 col-xl-9 pe-lg-4 pe-xl-0">
+            <!-- Meta -->
+            <div class="d-flex flex-wrap align-items-center justify-content-between border-bottom mb-4">
+                <div class="d-flex align-items-center mb-4 me-4">
+                    <span class="fs-sm me-2">{% trans "Por" %}:</span>
+                    <a class="nav-link position-relative fw-semibold p-0" href="#author" data-scroll data-scroll-offset="80">{{ post.author.get_full_name|default:post.author.username }}</a>
+                    {% if post.publish %}<span class="fs-sm ms-3">{{ post.publish|date:"d M Y" }}</span>{% endif %}
+                </div>
+                <div class="d-flex align-items-center mb-4">
+                    <span class="fs-sm me-2">{% trans "Compartir:" %}</span>
+                    <div class="d-flex">
+                        <!-- FE-06 CORREGIDO: Pasar título desde Django -->
+                        <a class="nav-link p-2 me-2" href="#" onclick="shareOnSocial('facebook', '{{ post.title|escapejs }}')"><i class="ai-facebook"></i></a>
+                        <a class="nav-link p-2 me-2" href="#" onclick="shareOnSocial('twitter', '{{ post.title|escapejs }}')"><i class="ai-x"></i></a>
+                        <a class="nav-link p-2 me-2" href="#" onclick="shareOnSocial('linkedin', '{{ post.title|escapejs }}')"><i class="ai-linkedin"></i></a>
+                        <a class="nav-link p-2" href="#" onclick="shareOnSocial('whatsapp', '{{ post.title|escapejs }}')"><i class="ai-phone"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Featured image -->
+            {% get_post_image_url post as post_image %}
+            {% if post_image %}
+                <div class="mb-4 mb-lg-5">
+                    <img class="rounded-5 w-100 img-fluid" src="{{ post_image }}" alt="{{ post.title }}" loading="lazy">
+                </div>
+            {% endif %}
+
+            <!-- Content -->
+            <div class="post-content">{{ post.body|safe }}</div>
+
+            <!-- Tags -->
+            {% if post_tags %}
+            <div class="d-flex flex-wrap pb-5 pt-3 pt-md-4 pt-xl-5 mt-xl-n2">
+                <h3 class="h6 py-1 mb-0 me-4">{% trans "Etiquetas relevantes:" %}</h3>
+                {% for tag in post_tags %}
+                    <a class="tag-link" href="{% url 'landing:news_list_by_tag' tag.slug %}">#{{ tag.name }}</a>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Navegación entre posts -->
+            <div class="post-navigation d-flex justify-content-between align-items-center py-4 mt-5 border-top border-bottom">
+                <div class="prev-post">
+                    {% if previous_post %}
+                    <a href="{% post_link_url previous_post %}" class="d-flex align-items-center text-decoration-none">
+                        <i class="ai-arrow-left me-3 fs-5 text-primary"></i>
+                        <div>
+                            <span class="d-block text-muted fs-sm">{% trans "Anterior" %}</span>
+                            <span class="fw-semibold text-dark">{{ previous_post.title|truncatechars:50 }}</span>
+                        </div>
+                    </a>
+                    {% endif %}
+                </div>
+                <div class="next-post">
+                    {% if next_post %}
+                    <a href="{% post_link_url next_post %}" class="d-flex align-items-center text-decoration-none">
+                        <div class="text-end">
+                            <span class="d-block text-muted fs-sm">{% trans "Siguiente" %}</span>
+                            <span class="fw-semibold text-dark">{{ next_post.title|truncatechars:50 }}</span>
+                        </div>
+                        <i class="ai-arrow-right ms-3 fs-5 text-primary"></i>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Carrusel posts relacionados -->
+            {% if related_carousel_posts %}
+            <div class="related-posts-carousel mt-5 pt-5">
+                <h3 class="h2 mb-4">{% trans "Artículos relacionados" %}</h3>
+                <div class="swiper related-posts-swiper">
+                    <div class="swiper-wrapper">
+                        {% for related in related_carousel_posts %}
+                        <div class="swiper-slide">
+                            <div class="card border-0 bg-secondary h-100 related-post">
+                                {% get_post_image_url related as related_image %}
+                                {% if related_image %}
+                                <a href="{% post_link_url related %}">
+                                    <img src="{{ related_image }}" class="card-img-top" alt="{{ related.title }}">
+                                </a>
+                                {% endif %}
+                                <div class="card-body d-flex flex-column">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <span class="fs-sm text-body-secondary">{{ related.publish|date:"d M Y" }}</span>
+                                        {% if related.category %}
+                                        <span class="fs-xs opacity-20 mx-2">|</span>
+                                        <span class="badge text-nav fs-xs border">{{ related.category.name }}</span>
+                                        {% endif %}
+                                    </div>
+                                    <h5 class="card-title">
+                                        <a href="{% post_link_url related %}" class="text-decoration-none text-dark">{{ related.title|truncatechars:60 }}</a>
+                                    </h5>
+                                    <p class="card-text flex-grow-1">{{ related|get_excerpt:20 }}</p>
+                                    <a href="{% post_link_url related %}" class="btn btn-sm btn-primary align-self-start">{% trans "Leer más" %}</a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="swiper-pagination mt-4"></div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Comments -->
+            {% if comments %}
+            <div class="pt-4 pt-xl-5 mt-4 post-comments" id="comments">
+                <h2 class="h1 py-lg-1 py-xl-3">{{ comments.count }} {% if comments.count == 1 %}{% trans "comentario" %}{% else %}{% trans "comentarios" %}{% endif %}</h2>
+                {% for comment in comments %}
+                <div class="comment-item border-bottom py-4 mt-2 mb-4">
+                    <div class="comment-meta">
+                        <div class="comment-avatar rounded-circle"><span>{{ comment.name|first|upper }}</span></div>
+                        <div class="ps-3">
+                            <h6 class="mb-0">{{ comment.name }}</h6>
+                            <span class="fs-sm text-body-secondary">{{ comment.created_at|date:"d M Y H:i" }}</span>
+                        </div>
+                    </div>
+                    <div class="comment-body">
+                        <p class="mb-0">{{ comment.body|linebreaks }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Comment form -->
+            <div class="card border-0 bg-secondary pt-2 p-md-2 p-xl-3 p-xxl-4 mt-4">
+                <div class="card-body">
+                    <h2 class="pb-2 pb-lg-3 pb-xl-4">{% trans "Deja un comentario" %}</h2>
+                    <!-- FE-05 CORREGIDO: Asegurar que action apunte a comment_ajax -->
+                    <form method="post" action="{% url 'landing:comment_ajax' %}" id="comment-form" class="row needs-validation g-4" novalidate>
+                        {% csrf_token %}
+                        <input type="hidden" name="post_id" value="{{ post.id }}">
+                        <input type="hidden" id="refresh-captcha-url" value="{{ refresh_captcha_url }}">
+                        {% for field in comment_form %}
+                            {% if field.name != 'captcha' %}
+                            <div class="{% if field.name == 'body' %}col-12{% else %}col-sm-6{% endif %}">
+                                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}{% if field.field.required %}<span class="text-danger">*</span>{% endif %}</label>
+                                {{ field }}
+                                <div class="invalid-feedback" id="error_{{ field.name }}">
+                                    {% if field.errors %}{{ field.errors.0 }}{% else %}{% trans "Este campo es requerido" %}{% endif %}
+                                </div>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if comment_form.captcha %}
+                        <div class="col-12">
+                            <label for="id_captcha_1" class="form-label">{% trans "Código de verificación" %}<span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <!-- No renderizamos el widget server-side (evita cachearlo). -->
+                                <!-- Campos que espera Django Simple Captcha: captcha_0 (hidden key) y captcha_1 (texto) -->
+                                <img id="captcha-image" src="" alt="captcha" class="captcha img-fluid me-2" style="height:48px; width:auto; display:inline-block;" />
+                                <input type="hidden" name="captcha_0" id="id_captcha_0" value="">
+                                <input type="text" name="captcha_1" id="id_captcha_1" class="form-control" placeholder="{% trans 'Ingrese el código' %}" aria-label="captcha" required>
+                                <!-- 🔧 CORRECCIÓN: Agregado type="button" para evitar submit del formulario -->
+                                <button type="button" class="btn js-captcha-refresh" title="{% trans 'Refrescar captcha' %}" aria-label="{% trans 'Refrescar captcha' %}">
+                                    <!-- Inline SVG refresh icon (stroke uses currentColor, stroke-width set for visibility) -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                                        <polyline points="23 4 23 10 17 10"></polyline>
+                                        <path d="M20.49 15a9 9 0 1 1-2.4-9.7"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="invalid-feedback" id="error_captcha">{% trans "Ingrese el captcha correctamente" %}</div>
+                        </div>
+                        {% endif %}
+
+                        <div class="col-12 pt-3">
+                            <button type="submit" class="btn btn-primary" id="btn_submit">
+                                {% trans "Publicar comentario" %}
+                                <span class="spinner-border spinner-border-sm d-none" id="spinner"></span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar: usar columna más amplia -->
+        <aside class="col-lg-4 col-xl-3">
+            <div class="offcanvas-lg offcanvas-end" id="sidebarNews">
+                <div class="offcanvas-header">
+                    <h4 class="offcanvas-title">{% trans "Más contenido" %}</h4>
+                    <button class="btn-close ms-auto" type="button" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <!-- Usar un contenedor con padding en el body para que los widgets respiren -->
+                <div class="offcanvas-body p-3">
+                    <!-- Search -->
+                    <div class="sidebar-widget mb-4">
+                        <form method="get" action="{% url 'landing:news_list' %}" class="position-relative">
+                            <label for="id_sidebar_search" class="visually-hidden">{% trans 'Buscar noticias' %}</label>
+                            <i class="ai-search position-absolute top-50 start-0 translate-middle-y ms-3"></i>
+                            <input id="id_sidebar_search" class="form-control ps-5" type="search" name="search" placeholder="{% trans 'Buscar noticias...' %}" aria-label="{% trans 'Buscar noticias' %}">
+                        </form>
+                    </div>
+
+                    <!-- Related posts -->
+                    {% if similar_posts %}
+                    <div class="sidebar-widget mb-4">
+                        <h4>{% trans "Artículos relacionados:" %}</h4>
+                        <div class="list-group list-group-flush">
+                            {% for related_post in similar_posts %}
+                                {% get_post_image_url related_post as related_image %}
+                                <a href="{% post_link_url related_post %}" class="list-group-item list-group-item-action d-flex align-items-center p-2 text-decoration-none">
+                                    {% if related_image %}
+                                        <img src="{{ related_image }}" alt="{{ related_post.title }}" width="72" height="54" class="rounded me-3" style="object-fit: cover;">
+                                    {% endif %}
+                                    <div class="small">
+                                        {{ related_post.title|truncatechars:70 }}
+                                    </div>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Tags -->
+                    {% if popular_tags %}
+                    <div class="sidebar-widget mb-4">
+                        <h4>{% trans "Etiquetas populares:" %}</h4>
+                        <div class="d-flex flex-wrap">
+                            {% for tag in popular_tags %}
+                                <a class="btn btn-outline-secondary btn-sm me-2 mb-2" href="{% url 'landing:news_list_by_tag' tag.slug %}">#{{ tag.name }}</a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Últimas noticias -->
+                    {% show_latest_posts_home 3 %}
+                </div>
+            </div>
+        </aside>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<!-- Swiper JS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+(function(){
+    // assets/js/front/comment-form.js
+    // FE-05: setupCommentForm, setupCaptchaRefresh, updateCaptcha
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function updateCaptcha(key, imageUrl) {
+        const img = document.getElementById('captcha-image');
+        const hidden = document.getElementById('id_captcha_0');
+        if (img && imageUrl) img.src = imageUrl;
+        if (hidden && key) hidden.value = key;
+    }
+
+    function setupCaptchaRefresh() {
+        const btn = document.querySelector('.js-captcha-refresh');
+        const refreshUrlInput = document.getElementById('refresh-captcha-url');
+        if (!refreshUrlInput) return;
+
+        if (btn) {
+            btn.addEventListener('click', function(e){
+                // Evitar comportamiento por defecto y propagación que pueda disparar submit o recarga
+                try { e.preventDefault(); } catch (err) {}
+                try { e.stopPropagation(); } catch (err) {}
+                try { if (e.stopImmediatePropagation) e.stopImmediatePropagation(); } catch (err) {}
+
+                // Evitar que el foco permanezca en el botón (puede provocar submit con Enter accidental)
+                try { this.blur(); } catch (err) {}
+
+                const url = refreshUrlInput.value;
+                if (!url) return false;
+
+                fetch(url, {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' }
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data && data.captcha_key && data.captcha_image) {
+                        updateCaptcha(data.captcha_key, data.captcha_image);
+                    }
+                })
+                .catch(err => console.error('Captcha refresh error', err));
+
+                // Evitar comportamiento adicional
+                return false;
+            });
+
+            // También prevenir que Enter sobre el botón dispare submit
+            btn.addEventListener('keydown', function(e){
+                if (e.key === 'Enter' || e.keyCode === 13) {
+                    try { e.preventDefault(); } catch (err) {}
+                    try { e.stopPropagation(); } catch (err) {}
+                    try { if (e.stopImmediatePropagation) e.stopImmediatePropagation(); } catch (err) {}
+                    this.click();
+                    return false;
+                }
+            });
+        }
+
+        // Cargar captcha inicial al cargar la página
+        (function loadInitial(){
+            const url = refreshUrlInput.value;
+            if (!url) return;
+            fetch(url, { method: 'GET', headers: { 'Accept': 'application/json' } })
+                .then(r => r.json())
+                .then(data => {
+                    if (data && data.captcha_key && data.captcha_image) {
+                        updateCaptcha(data.captcha_key, data.captcha_image);
+                    }
+                })
+                .catch(err => console.error('Initial captcha load error', err));
+        })();
+    }
+
+    function clearFormErrors() {
+        document.querySelectorAll('.invalid-feedback').forEach(el => {
+            el.textContent = '';
+            el.style.display = 'none';
+        });
+        document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+    }
+
+    function showFieldErrors(errors) {
+        for (const [field, info] of Object.entries(errors||{})) {
+            const errEl = document.getElementById('error_' + field) || document.getElementById('error_' + field.replace(/captcha_?/, 'captcha'));
+            if (errEl) {
+                errEl.textContent = (info.messages || []).join('; ');
+                errEl.style.display = 'block';
+            }
+            const input = document.querySelector('[name="' + field + '"]');
+            if (input) {
+                input.classList.add('is-invalid');
+            }
+        }
+    }
+
+    function setupCommentForm() {
+        const form = document.getElementById('comment-form');
+        if (!form) return;
+
+        form.addEventListener('submit', function(e){
+            e.preventDefault();
+            clearFormErrors();
+
+            const btn = document.getElementById('btn_submit');
+            const spinner = document.getElementById('spinner');
+            if (btn) btn.disabled = true;
+            if (spinner) spinner.classList.remove('d-none');
+
+            const formData = new FormData(form);
+
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken') || ''
+                }
+            })
+            .then(async response => {
+                const contentType = response.headers.get('content-type') || '';
+                let data = null;
+                if (contentType.indexOf('application/json') !== -1) {
+                    data = await response.json();
+                } else {
+                    data = { success: false, message: 'Unexpected response' };
+                }
+
+                if (response.ok && data.success) {
+                    try {
+                        if (window.Swal) {
+                            Swal.fire({ icon: 'success', title: data.message || 'Comentario recibido', timer: 3000, toast: true, position: 'top-end', showConfirmButton: false });
+                        }
+                    } catch (e) { console.warn(e); }
+
+                    form.reset();
+
+                    if (data.new_captcha_key && data.new_captcha_image_url) {
+                        updateCaptcha(data.new_captcha_key, data.new_captcha_image_url);
+                    }
+
+                } else {
+                    if (data && data.errors) {
+                        showFieldErrors(data.errors);
+                    } else if (data && data.message) {
+                        try { if (window.Swal) { Swal.fire({ icon: 'error', title: data.message, toast: true, position: 'top-end', timer: 3500, showConfirmButton: false }); } } catch (e) { console.warn(e); }
+                    }
+
+                    if (data && data.new_captcha_key && data.new_captcha_image_url) {
+                        updateCaptcha(data.new_captcha_key, data.new_captcha_image_url);
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Comment submit error', error);
+                try { if (window.Swal) { Swal.fire({ icon: 'error', title: 'Ocurrió un error. Intenta nuevamente.', toast: true, position: 'top-end', timer: 3500, showConfirmButton: false }); } } catch (e) { console.warn(e); }
+            })
+            .finally(() => {
+                if (btn) btn.disabled = false;
+                if (spinner) spinner.classList.add('d-none');
+            });
+        });
+    }
+
+    // FE-06: compartir en redes sociales
+    window.shareOnSocial = function(platform, title) {
+        const url = encodeURIComponent(window.location.href);
+        const text = encodeURIComponent(title || document.title);
+        var shareUrl = '';
+
+        switch (platform) {
+            case 'facebook':
+                shareUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + url;
+                break;
+            case 'twitter':
+                shareUrl = 'https://twitter.com/intent/tweet?url=' + url + '&text=' + text;
+                break;
+            case 'linkedin':
+                shareUrl = 'https://www.linkedin.com/sharing/share-offsite/?url=' + url;
+                break;
+            case 'whatsapp':
+                shareUrl = 'https://wa.me/?text=' + text + '%20' + url;
+                break;
+            default:
+                shareUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + url;
+        }
+
+        window.open(shareUrl, '_blank', 'width=600,height=400');
+    };
+
+    function initRelatedSwiper() {
+        try {
+            if (typeof Swiper !== 'undefined') {
+                const el = document.querySelector('.related-posts-swiper');
+                if (!el) return;
+
+                new Swiper(el, {
+                    slidesPerView: 1,
+                    spaceBetween: 16,
+                    loop: false,
+                    pagination: { el: el.querySelector('.swiper-pagination'), clickable: true },
+                    breakpoints: { 576: { slidesPerView: 2 }, 992: { slidesPerView: 3 } }
+                });
+            }
+        } catch (e) { console.warn('Swiper init error', e); }
+    }
+
+    function initTooltips() {
+        try {
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) { return new bootstrap.Tooltip(tooltipTriggerEl); });
+        } catch (e) { /* ignore if bootstrap not present */ }
+    }
+
+    function setupOffcanvasFocus() {
+        try {
+            const offcanvasEl = document.getElementById('sidebarNews');
+            if (!offcanvasEl) return;
+            offcanvasEl.addEventListener('shown.bs.offcanvas', function () {
+                const input = offcanvasEl.querySelector('input[type="search"]');
+                if (input) input.focus({ preventScroll: true });
+            });
+        } catch (e) { /* bootstrap event not available */ }
+    }
+
+    document.addEventListener('DOMContentLoaded', function(){
+        setupCaptchaRefresh();
+        setupCommentForm();
+        initRelatedSwiper();
+        initTooltips();
+        setupOffcanvasFocus();
+
+        document.addEventListener('click', function(ev){
+            try {
+                const a = ev.target.closest && ev.target.closest('a[href="#"]');
+                if (a) { ev.preventDefault(); ev.stopPropagation(); }
+            } catch (e) { /* no-op */ }
+        }, { passive: false });
+    });
+
+})();
+</script>
+
+{% endblock %}
