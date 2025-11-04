@@ -28,7 +28,22 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-zsv$e)t^m91lj8hs)(+
 DEBUG = os.getenv('DJANGO_DEBUG', 'True').lower() in ('1', 'true', 'yes')
 
 # Allow hosts from environment (comma separated) or default to all during development
-ALLOWED_HOSTS = [h for h in os.getenv('DJANGO_ALLOWED_HOSTS', '').split(',') if h] or ['*']
+_raw_allowed = os.getenv('DJANGO_ALLOWED_HOSTS', '')
+_allowed = [h.strip() for h in _raw_allowed.split(',') if h.strip()]
+if _allowed:
+    ALLOWED_HOSTS = _allowed
+else:
+    # If running in DEBUG mode (local/dev), default to permissive '*' so local testing works.
+    if DEBUG:
+        ALLOWED_HOSTS = ['*']
+    else:
+        # Try common Render environment variables to infer the public hostname
+        render_host = os.getenv('RENDER_EXTERNAL_HOSTNAME') or os.getenv('RENDER_SERVICE_NAME') or os.getenv('RENDER_EXTERNAL_URL')
+        if render_host:
+            ALLOWED_HOSTS = [render_host]
+        else:
+            # Keep empty list to force explicit configuration in production
+            ALLOWED_HOSTS = []
 
 
 # Application definition
