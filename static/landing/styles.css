@@ -539,3 +539,84 @@ html,body{width:100%;height:100%;margin:0;padding:0}
 .video-thumb-img{width:100%;height:100%;object-fit:cover;object-position:center;display:block}
 .play-overlay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:72px;height:72px;border-radius:50%;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px rgba(0,0,0,0.4)}
 .play-overlay svg{display:block}
+
+    /* Responsive adjustments */
+/* Large desktops: 1200px and above - minor tweaks already fine */
+@media (max-width: 1200px) {
+  .container{padding-left:2.5rem;padding-right:2.5rem}
+  .hero-title{font-size:3.6rem}
+  .hero-lead{font-size:1.45rem}
+  .video-wrapper{max-width:1000px}
+}
+
+/* Medium devices / small desktops */
+@media (max-width: 992px) {
+  .container{padding-left:2rem;padding-right:2rem}
+  .hero-title{font-size:3.0rem}
+  .hero-lead{font-size:1.35rem}
+  .device-frame{max-width:480px;aspect-ratio:4/3}
+  .responsive-video{padding-bottom:56%}
+}
+
+/* Tablets */
+@media (max-width: 768px) {
+  body{font-size:18px}
+  .container{padding-left:1.5rem;padding-right:1.5rem}
+  .hero{padding:3.5rem 0}
+  .hero .row{flex-direction:column-reverse;gap:2rem}
+  .hero .col-6, .hero .col-5{flex-basis:100% !important;max-width:100% !important}
+  .hero-title{font-size:2.6rem}
+  .hero-lead{font-size:1.15rem}
+  .device-frame{width:100%;max-width:100%;aspect-ratio:16/9;border-radius:16px}
+  .device-image{border-radius:12px}
+  .video-wrapper{padding:0 1rem}
+  .responsive-video{padding-bottom:56.25%;border-radius:12px}
+  .video-thumb-box{aspect-ratio:16/9}
+  .play-overlay{width:60px;height:60px}
+  .play-overlay svg{width:24px;height:24px}
+  .btn-primary.btn-lg, .btn-outline-secondary.btn-lg{padding:0.9rem 1.2rem;font-size:1.05rem}
+}
+
+/* Mobile phones */
+@media (max-width: 576px) {
+  body{font-size:16px}
+  .container{padding-left:1rem;padding-right:1rem}
+  .hero{padding:2.5rem 0}
+  .hero-title{font-size:2.1rem}
+  .hero-lead{font-size:1rem}
+  .device-frame{aspect-ratio:4/3;max-width:100%;height:auto;border-radius:12px}
+  .device-image{object-position:center top}
+  .video-wrapper{padding:0}
+  .responsive-video{padding-bottom:56%;border-radius:12px}
+  .video-thumb-box{border-radius:12px}
+  .video-thumb-img{object-position:center}
+
+  /* Make CTAs full width and stacked */
+  .mt-4{display:flex;flex-direction:column;gap:0.75rem}
+  .btn{width:100%}
+
+  /* Form and inputs full width */
+  .form-control{width:100%;box-sizing:border-box}
+  #cta-email{width:100%}
+  #cta-reserve{padding:0.9rem;font-size:1.05rem}
+
+  /* Chosen info and deposit area stack vertically */
+  .d-flex{flex-direction:column;align-items:flex-start;gap:1rem}
+  #deposit-amount{font-size:2rem}
+  .reservar-submit{width:100%}
+
+  /* Reduce shadows and heavy effects on mobile for performance */
+  .device-frame{box-shadow:0 24px 60px rgba(27,156,217,0.18)}
+  .responsive-video{box-shadow:0 16px 40px rgba(27,156,217,0.18)}
+}
+
+/* Accessibility: increase tap target sizes on touch devices */
+@media (hover: none) and (pointer: coarse) {
+  .btn, .form-control{min-height:48px}
+  .btn{padding-top:0.6rem;padding-bottom:0.6rem}
+}
+
+/* Ensure footer and header padding adapt */
+@media (max-width: 768px){
+  .site-header-inner, .site-footer-inner{padding-left:1rem;padding-right:1rem}
+}
