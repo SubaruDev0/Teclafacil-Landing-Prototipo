@@ -22,7 +22,7 @@
           <h3 style="color:var(--accent-2);margin-bottom:1.5rem;font-size:1.8rem;">Reserva tu kit ahora</h3>
           <label for="cta-email" class="form-label">Ingresa tu email para continuar</label>
           <input id="cta-email" class="form-control mb-3" type="email" placeholder="tu@ejemplo.com" style="margin-bottom:1rem !important;">
-          <button id="cta-reserve" class="btn btn-primary btn-lg w-100" type="button">Reservar Kit — CLP $80.000</button>
+          <button id="cta-reserve" class="btn btn-primary btn-lg w-100" type="button">Reservar Kit — CLP $350.000</button>
           <p style="text-align:center;margin-top:1rem;font-size:0.95rem;color:var(--muted);">Depósito 100% reembolsable</p>
         </div>
       </div>
@@ -38,8 +38,7 @@ document.addEventListener('DOMContentLoaded', function(){
   if(btn){
     btn.addEventListener('click', function(){
       var email = input.value || '';
-      var url = "{% url 'landing:reservar' %}" + (email ? ('?email=' + encodeURIComponent(email) + '&tipo=kit') : '?tipo=kit');
-      window.location.href = url;
+      window.location.href = "{% url 'landing:reservar' %}" + (email ? ('?email=' + encodeURIComponent(email) + '&tipo=kit') : '?tipo=kit');
     });
   }
   // También permitir presionar Enter en el input

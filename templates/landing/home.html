@@ -7,7 +7,7 @@
     <div class="row align-items-center" style="gap:4rem;">
       <div class="col-6">
         <h1 class="hero-title">TeclaFácil</h1>
-        <p class="hero-lead">El teclado ergonómico diseñado para programadores senior. Reduce dolor, aumenta productividad y prolonga carreras.</p>
+        <p class="hero-lead">El teclado diseñado para programadores senior. Reduce dolor, aumenta productividad y prolonga carreras.</p>
         <div class="mt-4" style="display:flex;gap:1.5rem;flex-wrap:wrap;">
           {% if cta_email %}
             <a class="btn btn-primary btn-lg" href="{% url 'landing:reservar' %}?email={{ cta_email|urlencode }}&tipo=kit">Reservar Kit Profesional</a>
@@ -19,7 +19,7 @@
       </div>
       <div class="col-5">
         <div class="device-frame">
-          <img src="{% static 'landing/personausdando.png' %}" alt="Usuario usando TeclaFácil" class="device-image">
+          <img src="{% static 'landing/img_1.png' %}" alt="Usuario usando TeclaFácil" class="device-image">
           <div class="device-glow"></div>
         </div>
       </div>
@@ -34,9 +34,20 @@
     <h3>Demostración del prototipo</h3>
     <div class="video-wrapper">
       <div class="responsive-video">
-        <!-- Embed del YouTube Short -->
-        <iframe src="https://www.youtube.com/embed/quD3KxTH5vA" title="TeclaFácil demo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        <!-- Reemplazado el iframe por una miniatura clicable que abre YouTube en nueva pestaña para evitar el Error 153 -->
+        <a class="video-thumb d-block position-relative" href="https://www.youtube.com/watch?v=f0U8Njh9bUQ" target="_blank" rel="noopener noreferrer">
+          <div class="video-thumb-box">
+            <img src="{% static 'landing/img.png' %}" alt="TeclaFácil demo" loading="lazy" class="video-thumb-img">
+            <div class="play-overlay" aria-hidden="true">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M8 5v14l11-7-11-7z" fill="#fff"></path>
+              </svg>
+            </div>
+          </div>
+        </a>
       </div>
+      <!-- Enlace textual de fallback por si alguien prefiere abrir directamente -->
+      <p class="mt-2">Si prefieres, también puedes ver el video directamente en YouTube: <a href="https://www.youtube.com/watch?v=f0U8Njh9bUQ" target="_blank" rel="noopener noreferrer">Ver en YouTube</a></p>
     </div>
     <p class="video-caption">Un vistazo rápido a TeclaFácil — diseño pensado para largas jornadas de programación sin dolor.</p>
   </div>

@@ -533,3 +533,9 @@ html,body{width:100%;height:100%;margin:0;padding:0}
 
 /* Stats grid: ocupar todo el ancho y distribuir */
 .stats-grid{display:flex;gap:2rem;justify-content:space-around;align-items:center;width:100%}
+
+/* Video thumbnail local (encuadrado) */
+.video-thumb-box{position:relative;width:100%;height:100%;aspect-ratio:16/9;overflow:hidden;border-radius:16px}
+.video-thumb-img{width:100%;height:100%;object-fit:cover;object-position:center;display:block}
+.play-overlay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:72px;height:72px;border-radius:50%;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px rgba(0,0,0,0.4)}
+.play-overlay svg{display:block}

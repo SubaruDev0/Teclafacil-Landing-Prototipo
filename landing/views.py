@@ -41,16 +41,16 @@ def reservar(request):
             tipo = reserva.tipo
             # precios del producto
             if tipo == 'teclado':
-                precio = 50000.00
+                precio = 250000.00
                 reserva.deposito = precio  # 100% reembolsable
             elif tipo == 'kit':
-                precio = 80000.00
+                precio = 350000.00
                 reserva.deposito = precio  # 100% reembolsable
             elif tipo == 'pilot':
                 precio = 200000.00
                 reserva.deposito = 0.00  # empresas no pagan depósito
             else:
-                precio = 50000.00
+                precio = 250000.00
                 reserva.deposito = precio
             reserva.save()
             return redirect(reverse('landing:gracias'))
@@ -66,17 +66,17 @@ def reservar(request):
     # calcular valores iniciales para mostrar en la plantilla
     tipo_effective = request.GET.get('tipo') or (form.initial.get('tipo') if hasattr(form, 'initial') else None) or 'kit'
     if tipo_effective == 'teclado':
-        initial_product_price = 'CLP $50.000'
-        initial_deposit = 'CLP $50.000'
+        initial_product_price = 'CLP $250.000'
+        initial_deposit = 'CLP $250.000'
     elif tipo_effective == 'kit':
-        initial_product_price = 'CLP $80.000'
-        initial_deposit = 'CLP $80.000'
+        initial_product_price = 'CLP $350.000'
+        initial_deposit = 'CLP $350.000'
     elif tipo_effective == 'pilot':
         initial_product_price = 'CLP $200.000'
         initial_deposit = 'CLP $0'
     else:
-        initial_product_price = 'CLP $50.000'
-        initial_deposit = 'CLP $50.000'
+        initial_product_price = 'CLP $250.000'
+        initial_deposit = 'CLP $250.000'
     return render(request, 'landing/reservar.html', {'form': form, 'request': request, 'initial_product_price': initial_product_price, 'initial_deposit': initial_deposit})
 
 
